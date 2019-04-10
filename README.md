@@ -1,13 +1,13 @@
 ## zbx1
 
-This is the code that accompanies the **zbx1** tutorial on **Scotch.io**.
+Dashboard to manage a file system
 
 ## Installation
 
 ```bash
 
 # Get the project
-git clone https://github.com/unicodeveloper/zbx1
+git clone https://github.com/metiago/zbx1
 
 # Change directory
 cd zbx1
