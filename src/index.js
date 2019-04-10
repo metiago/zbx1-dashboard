@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Dashboard from './components/Dashboard';
-import Callback from './components/Callback';
+import Dashboard from './dashboard/Dashboard';
+import Callback from './dashboard/Callback';
 import App from './App'
 import registerServiceWorker from './registerServiceWorker';
 import { Router, Route, browserHistory } from 'react-router';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { login, logout, isLoggedIn } from '../utils/AuthService';
-import '../App.css';
+import { login, logout, isLoggedIn } from '../../utils/AuthService';
+
 
 class Nav extends Component {
 
