@@ -7,10 +7,12 @@ Dashboard to manage a file system
 ```bash
 
 # Get the project
-git clone https://github.com/metiago/zbx1
+git clone https://github.com/metiago/zbx1-dashboard
+
 
 # Change directory
-cd zbx1
+cd zbx1-dashboard
+
 
 # Install the dependencies
 npm install
