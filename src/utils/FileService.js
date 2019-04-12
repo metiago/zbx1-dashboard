@@ -1,9 +1,7 @@
 import { post } from 'axios';
 
 export function upload(files) {
-
-    // console.log(files);
-
+    
     let formdata = new FormData();
     formdata.append('file', new Blob(files));
     
