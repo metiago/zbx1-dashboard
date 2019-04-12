@@ -88,7 +88,7 @@ class Dropzone extends Component {
             case 403:
                 this.setState({ clazz: 'alert alert-warning', status: response.status, message: response.statusText });
                 break;
-            case 500:
+            default:
                 this.setState({ clazz: 'alert alert-danger', status: response.status, message: response.statusText });
                 break;
         }
