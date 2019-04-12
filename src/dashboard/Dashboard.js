@@ -52,7 +52,7 @@ class Dashboard extends Component {
                     <strong className="text-gray-dark">{data.name}</strong>
                     <a>Details</a>
                   </div>
-                  <span className="d-block">@tiago</span>
+                  <span className="d-block">@{data.username}</span>
                 </div>
               </div>
             ))
