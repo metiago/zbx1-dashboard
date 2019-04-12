@@ -71,22 +71,25 @@ class Dropzone extends Component {
     upload(files) {
         const res = upload(files);
         let that = this;
-        res.then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {                
+        res.then(function (response) {          
+            that.handleHttpResponse(response)
+        }).catch(function (error) {
             that.handleHttpResponse(error.response)
         });
     }
 
+    // FIXME: move from state to simple vars
     handleHttpResponse(response) {
         console.log(response);
         switch (response.status) {
-            case 403:
-                this.setState({ clazz: 'alert alert-danger', status: response.status, message: response.statusText });
+            case 200:            
+                this.setState({ clazz: 'alert alert-success', status: response.status, message: response.statusText });
                 break;
-            default:
-                this.setState({ clazz: 'alert alert-danger', status: response.data.status_code, message: response.data.message });
+            case 403:
+                this.setState({ clazz: 'alert alert-warning', status: response.status, message: response.statusText });
+                break;
+            case 500:
+                this.setState({ clazz: 'alert alert-danger', status: response.status, message: response.statusText });
                 break;
         }
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import { browserHistory } from 'react-router';
 import { login } from '../../utils/AuthService';
-import Alert from '../alert/Alert'
+
 
 class Login extends Component {
 
@@ -48,7 +48,7 @@ class Login extends Component {
 
       <div className="text-center">
 
-
+       
 
         <form className="form-signin">
 

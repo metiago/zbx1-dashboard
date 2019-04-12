@@ -1,13 +1,16 @@
 import { post } from 'axios';
+import { getIdToken } from './AuthService'
 
 export function upload(files) {
     
+    // TODO: Iterate files to upload multiple them
     let formdata = new FormData();
-    formdata.append('file', new Blob(files));
+    formdata.append('file', files[0]);
     
     const config = {
         headers: {
-            'content-type': 'multipart/form-data'
+            'content-type': 'multipart/form-data',
+            'Authorization': getIdToken()
         }
     }
     
