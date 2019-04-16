@@ -9,10 +9,7 @@ class Dropzone extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            hightlight: false,
-            clazz: null,
-            status: null,
-            message: null
+            hightlight: false
         };
         this.fileInputRef = React.createRef();
 
@@ -78,23 +75,31 @@ class Dropzone extends Component {
         });
     }
 
-    // FIXME: move from state to simple vars
     handleHttpResponse(response) {
         console.log(response);
+        let clazz = null;
+        let status = null;
+        let message = null;
         switch (response.status) {
-            case 200:            
-                this.setState({ clazz: 'alert alert-success', status: response.status, message: response.statusText });
+            case 200:                
+                clazz = 'alert alert-success'
+                status = response.status
+                message = response.statusText
                 break;
-            case 403:
-                this.setState({ clazz: 'alert alert-warning', status: response.status, message: response.statusText });
+            case 403:                
+                clazz = 'alert alert-warning'
+                status = response.status
+                message = response.statusText
                 break;
             default:
-                this.setState({ clazz: 'alert alert-danger', status: response.status, message: response.statusText });
+                clazz = 'alert alert-danger'
+                status = response.status
+                message = response.statusText                
                 break;
         }
 
         ReactDOM.render(
-            <Alert clazz={this.state.clazz} status={this.state.status} message={this.state.message} />,
+            <Alert clazz={clazz} status={status} message={message} />,
             document.getElementById('errors')
         );
     }
