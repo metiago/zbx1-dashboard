@@ -11,12 +11,13 @@ export function upload(files) {
             'Authorization': getIdToken()
         }
     }
-    
-    // TODO: Iterate files to upload multiple them
+
     let formdata = new FormData();
-    formdata.append('file', files[0]);
-    
-    const res = post('http://localhost:5000/api/v1/files/upload', formdata, config);   
+    for (let file of files) {
+        formdata.append('file', file);
+    }
+
+    const res = post('http://localhost:5000/api/v1/files/upload', formdata, config);
 
     return res;
 }
@@ -30,7 +31,7 @@ export function findAll() {
         }
     }
 
-    const res = get('http://localhost:5000/api/v1/files/metiago', config); 
+    const res = get('http://localhost:5000/api/v1/files/metiago', config);
 
     return res;
 }

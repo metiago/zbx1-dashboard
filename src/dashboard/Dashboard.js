@@ -16,7 +16,7 @@ class Dashboard extends Component {
   findAll() {
     let that = this;
     findAll().then(function (res) {
-      that.setState({ files: res.data.slice(0, 6) });
+      that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
       console.log(error.response)
     });
