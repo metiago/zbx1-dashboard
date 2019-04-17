@@ -73,38 +73,49 @@ class Dropzone extends Component {
     upload(files) {
 
         // FIXME: CHUNK IT
-        // const chunksQueue = new Array(files).fill().map((_, index) => index).reverse();
-        // const chunkSize = chunksQueue.length;
-        // const chunkId = chunksQueue.pop();
-        // const begin = chunkId * chunkSize;
-        // const chunk = files[0].slice(begin, begin + chunkSize);
-        // console.log(chunk)
-
         let that = this;
+        let blob = files[0]
+        let BYTES_PER_CHUNK = parseInt(1048576, 10);
+        let SIZE = blob.size;
+        let NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
+        let start = 0;
+        let end = BYTES_PER_CHUNK;
+        let formdata = new FormData();
 
         const config = {
-            
-            onUploadProgress: function (progressEvent) {
-                
-                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
-               
-                that.setState({progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue:  uploadPercentage, showProgressBar: true});
-            }
-        }        
 
-        let formdata = new FormData();
-        for (let file of files) {
-            formdata.append('file', file);
+            onUploadProgress: function (progressEvent) {
+
+                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+
+                that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
+            }
         }
 
-        post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
-            
-            that.handleHttpResponse(response)
 
-        }).catch(function (error) {
-            that.handleHttpResponse(error.response)
-            that.setState({showProgressBar: false})
-        });
+        // for (let file of files) {
+        //     formdata.append('file', file);
+        // }
+
+        while (start < SIZE) {
+            formdata.append('file', blob.slice(start, end));
+            console.log(blob.slice(start, end))
+            start = end;
+            end = start + BYTES_PER_CHUNK;
+
+            for (let file of files) {
+                formdata.append('file', file);
+            }
+
+            post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+
+                that.handleHttpResponse(response)
+
+            }).catch(function (error) {
+                that.handleHttpResponse(error.response)
+                that.setState({ showProgressBar: false })
+            });
+        }
     }
 
     handleHttpResponse(response) {
@@ -124,15 +135,20 @@ class Dropzone extends Component {
                 status = response.status
                 message = response.statusText
                 break;
+            case 400:
+                clazz = 'alert alert-warning'
+                status = response.status
+                message = response.data.message
+                break;
             case 500:
                 clazz = 'alert alert-danger'
                 status = response.status
                 message = response.statusText
                 break;
         }
-        
+
         ReactDOM.render(
-            <Alert clazz={clazz} status={status} message={message} />,  document.getElementById('errors')
+            <Alert clazz={clazz} status={status} message={message} />, document.getElementById('errors')
         );
     }
 
@@ -166,8 +182,8 @@ class Dropzone extends Component {
                 </div>
 
                 {
-                
-                (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
+
+                    (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
 
                 }
 
