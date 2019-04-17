@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import ReactDOM from 'react-dom'
 
+import axios from 'axios';
+import { get, post } from 'axios';
+
+import ProgressBar from '../components/progress/ProgressBar'
+import Alert from '../components/alert/Alert'
 import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
-import { findAll } from '../utils/FileService'
+
 import { getIdToken } from '../utils/AuthService'
 
 class Dashboard extends Component {
@@ -18,18 +23,24 @@ class Dashboard extends Component {
       fileID: null,
       modalTitle: null,
       fileOwner: null,
-      fileCreated: null
+      fileCreated: null,
+      progressBarStyle: null,
+      progressBarValue: 0,
+      showProgressBar: false
     };
 
     this.detail = this.detail.bind(this)
-    this.delete = this.delete.bind(this);
+    this.delete = this.delete.bind(this)
+    this.upload = this.upload.bind(this)
   }
 
   findAll() {
     let that = this;
-    findAll().then(function (res) {
+    const res = get('http://localhost:5000/api/v1/files/metiago');
+    res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
+      console.log(error)
       console.log(error.response)
     });
   }
@@ -41,25 +52,25 @@ class Dashboard extends Component {
     axios.interceptors.request.use(async (config) => {
 
       config.headers.Authorization = getIdToken()
-    
-      self.setState({loading: true})
-    
+
+      self.setState({ loading: true })
+
       return config;
-    
+
     }, (error) => {
-      self.setState({loading: false})
+      self.setState({ loading: false })
       return Promise.reject(error);
     });
-    
+
     axios.interceptors.response.use(function (response) {
-    
-      self.setState({loading: false})
-      
+
+      self.setState({ loading: false })
+
       return response;
-    
+
     }, function (error) {
-      self.setState({loading: false})
-    
+      self.setState({ loading: false })
+
       return Promise.reject(error);
     });
 
@@ -80,6 +91,96 @@ class Dashboard extends Component {
     console.log(data)
   }
 
+  upload(files) {
+
+    let that = this;
+    let formdata = new FormData();
+
+    // TODO: CHUNK IT        
+    // let blob = files[0]
+    // let BYTES_PER_CHUNK = parseInt(1048576, 10);
+    // let SIZE = blob.size;
+    // let NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
+    // let start = 0;
+    // let end = BYTES_PER_CHUNK;
+
+    const config = {
+
+      onUploadProgress: function (progressEvent) {
+
+        const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+
+        that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
+      }
+    }
+
+    for (let file of files) {
+
+      formdata.append('file', file);
+
+      post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+
+        that.handleHttpResponse(response)
+        that.findAll()
+      }).catch(function (error) {
+        that.handleHttpResponse(error.response)
+        that.setState({ showProgressBar: false })
+      });
+    }
+
+    // while (start < SIZE) {
+
+    //     formdata.append('file', blob.slice(start, end));
+    //     formdata.append('name', blob.name);
+
+    //     start = end;
+    //     end = start + BYTES_PER_CHUNK;
+
+    //     post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+
+    //         that.handleHttpResponse(response)
+
+    //     }).catch(function (error) {
+    //         that.handleHttpResponse(error.response)
+    //         that.setState({ showProgressBar: false })
+    //     });
+    // }
+  }
+
+  handleHttpResponse(response) {
+    console.log(response);
+    let clazz = null;
+    let status = null;
+    let message = null;
+    switch (response.status) {
+      case 200:
+      case 201:
+        clazz = 'alert alert-success'
+        status = response.status
+        message = response.statusText
+        break;
+      case 403:
+        clazz = 'alert alert-warning'
+        status = response.status
+        message = response.statusText
+        break;
+      case 400:
+        clazz = 'alert alert-warning'
+        status = response.status
+        message = response.data.message
+        break;
+      case 500:
+        clazz = 'alert alert-danger'
+        status = response.status
+        message = response.statusText
+        break;
+    }
+
+    ReactDOM.render(
+      <Alert clazz={clazz} status={status} message={message} />, document.getElementById('errors')
+    );
+  }
+
   render() {
 
     const { files } = this.state;
@@ -88,11 +189,17 @@ class Dashboard extends Component {
 
       <div>
 
-        <FileDetail modal={this.state.modal} fileID={this.state.fileID} title={this.state.modalTitle} username={this.state.fileOwner} created={this.state.fileCreated} detail={this.detail} delete={this.delete}/>
+        <FileDetail modal={this.state.modal} fileID={this.state.fileID} title={this.state.modalTitle} username={this.state.fileOwner} created={this.state.fileCreated} detail={this.detail} delete={this.delete} />
 
-        <Nav loading={this.state.loading}/>
+        <Nav loading={this.state.loading} />
 
-        <Dropzone />
+        <Dropzone upload={this.upload} />
+
+        {
+
+          (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
+
+        }
 
         <main>
 

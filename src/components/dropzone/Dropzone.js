@@ -1,20 +1,13 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import { post } from 'axios';
 
 import './Dropzone.css'
-import Alert from '../alert/Alert'
-import ProgressBar from '../progress/ProgressBar'
 
 class Dropzone extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            hightlight: false,
-            progressBarStyle: null,
-            progressBarValue: 0,
-            showProgressBar: false
+            hightlight: false
         };
         this.fileInputRef = React.createRef();
 
@@ -37,7 +30,7 @@ class Dropzone extends Component {
             const array = this.fileListToArray(files);
             this.props.onFilesAdded(array);
         }
-        this.upload(files);
+        this.props.upload(files);
     }
 
     fileListToArray(list) {
@@ -67,89 +60,8 @@ class Dropzone extends Component {
             this.props.onFilesAdded(array);
         }
         this.setState({ hightlight: false });
-        this.upload(files);
-    }
-
-    upload(files) {
-
-        // FIXME: CHUNK IT
-        let that = this;
-        let blob = files[0]
-        let BYTES_PER_CHUNK = parseInt(1048576, 10);
-        let SIZE = blob.size;
-        let NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
-        let start = 0;
-        let end = BYTES_PER_CHUNK;
-        let formdata = new FormData();
-
-        const config = {
-
-            onUploadProgress: function (progressEvent) {
-
-                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
-
-                that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
-            }
-        }
-
-
-        // for (let file of files) {
-        //     formdata.append('file', file);
-        // }
-
-        while (start < SIZE) {
-            formdata.append('file', blob.slice(start, end));
-            console.log(blob.slice(start, end))
-            start = end;
-            end = start + BYTES_PER_CHUNK;
-
-            for (let file of files) {
-                formdata.append('file', file);
-            }
-
-            post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
-
-                that.handleHttpResponse(response)
-
-            }).catch(function (error) {
-                that.handleHttpResponse(error.response)
-                that.setState({ showProgressBar: false })
-            });
-        }
-    }
-
-    handleHttpResponse(response) {
-        console.log(response);
-        let clazz = null;
-        let status = null;
-        let message = null;
-        switch (response.status) {
-            case 200:
-            case 201:
-                clazz = 'alert alert-success'
-                status = response.status
-                message = response.statusText
-                break;
-            case 403:
-                clazz = 'alert alert-warning'
-                status = response.status
-                message = response.statusText
-                break;
-            case 400:
-                clazz = 'alert alert-warning'
-                status = response.status
-                message = response.data.message
-                break;
-            case 500:
-                clazz = 'alert alert-danger'
-                status = response.status
-                message = response.statusText
-                break;
-        }
-
-        ReactDOM.render(
-            <Alert clazz={clazz} status={status} message={message} />, document.getElementById('errors')
-        );
+        // calling parent function
+        this.props.upload(files);
     }
 
     render() {
@@ -180,12 +92,6 @@ class Dropzone extends Component {
                     <span>Upload Files</span>
 
                 </div>
-
-                {
-
-                    (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
-
-                }
 
             </div>
         );
