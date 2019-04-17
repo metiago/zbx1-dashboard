@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 
 import axios from 'axios';
-import { get, post } from 'axios';
 
 import ProgressBar from '../components/progress/ProgressBar'
 import Alert from '../components/alert/Alert'
@@ -36,7 +35,7 @@ class Dashboard extends Component {
 
   findAll() {
     let that = this;
-    const res = get('http://localhost:5000/api/v1/files/metiago');
+    const res = axios.get('http://localhost:5000/api/v1/files/metiago');
     res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
@@ -93,10 +92,9 @@ class Dashboard extends Component {
 
   upload(files) {
 
-    let that = this;
-    let formdata = new FormData();
+    let that = this;    
 
-    // TODO: CHUNK IT        
+    // TODO: CHUNK UPLOAD FOR LARGE FILES        
     // let blob = files[0]
     // let BYTES_PER_CHUNK = parseInt(1048576, 10);
     // let SIZE = blob.size;
@@ -116,12 +114,16 @@ class Dashboard extends Component {
 
     for (let file of files) {
 
+      let formdata = new FormData();
       formdata.append('file', file);
 
-      post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+      console.log(file)
 
-        that.handleHttpResponse(response)
+      axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+
+        that.setState({ showProgressBar: false })
         that.findAll()
+        that.handleHttpResponse(response)
       }).catch(function (error) {
         that.handleHttpResponse(error.response)
         that.setState({ showProgressBar: false })
