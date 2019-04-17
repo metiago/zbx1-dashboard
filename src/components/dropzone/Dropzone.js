@@ -1,15 +1,21 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import { post } from 'axios';
+import { getIdToken } from '../../utils/AuthService'
+
 import './Dropzone.css'
-import { upload } from '../../utils/FileService'
 import Alert from '../alert/Alert'
+import ProgressBar from '../progress/ProgressBar'
 
 class Dropzone extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            hightlight: false
+            hightlight: false,
+            progressBarStyle: null,
+            progressBarValue: 0,
+            showProgressBar: false
         };
         this.fileInputRef = React.createRef();
 
@@ -66,9 +72,46 @@ class Dropzone extends Component {
     }
 
     upload(files) {
-        const res = upload(files);
+
+        // FIXME: CHUNK IT
+        // const chunksQueue = new Array(files).fill().map((_, index) => index).reverse();
+        // const chunkSize = chunksQueue.length;
+        // const chunkId = chunksQueue.pop();
+        // const begin = chunkId * chunkSize;
+        // const chunk = files[0].slice(begin, begin + chunkSize);
+        // console.log(chunk)
+
         let that = this;
-        res.then(function (response) {          
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data',
+                'Authorization': getIdToken()
+            },
+            onUploadProgress: function (progressEvent) {
+                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+                
+                let i = 0;
+                setInterval(function () {                    
+                    if (i == 100) {
+                        that.setState({showProgressBar: false})
+                    } else {
+                        that.setState({progressBarStyle: { width: `${i++}%` }, progressBarValue:  i++, showProgressBar: true});
+                    }
+                }, 600)
+
+            }
+        }        
+
+        let formdata = new FormData();
+        for (let file of files) {
+            formdata.append('file', file);
+        }
+
+        const res = post('http://localhost:5000/api/v1/files/upload', formdata, config);
+
+        
+        res.then(function (response) {
             that.handleHttpResponse(response)
         }).catch(function (error) {
             that.handleHttpResponse(error.response)
@@ -81,23 +124,25 @@ class Dropzone extends Component {
         let status = null;
         let message = null;
         switch (response.status) {
-            case 200:                
+            case 200:
+            case 201:
                 clazz = 'alert alert-success'
                 status = response.status
                 message = response.statusText
                 break;
-            case 403:                
+            case 403:
                 clazz = 'alert alert-warning'
                 status = response.status
                 message = response.statusText
                 break;
-            default:
+            case 500:
                 clazz = 'alert alert-danger'
                 status = response.status
-                message = response.statusText                
+                message = response.statusText
                 break;
         }
 
+        // FIXME Change it like progress bar updating state
         ReactDOM.render(
             <Alert clazz={clazz} status={status} message={message} />,
             document.getElementById('errors')
@@ -132,6 +177,12 @@ class Dropzone extends Component {
                     <span>Upload Files</span>
 
                 </div>
+
+                {
+                
+                (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
+
+                }
 
             </div>
         );
