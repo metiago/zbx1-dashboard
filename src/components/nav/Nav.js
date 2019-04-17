@@ -6,9 +6,6 @@ class Nav extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      loading: true
-    };
   }
 
   render() {
@@ -23,10 +20,10 @@ class Nav extends Component {
         <div className="collapse navbar-collapse" id="navbarNavDropdown">
           <ul className="navbar-nav">
             <li className="nav-item active">
-              <a className="nav-link" href="/dashboard">Dashboard <span className="sr-only">(current)</span></a>
+              <a className="nav-link" href="/dashboard">Dashboard</a>
             </li>
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li className="nav-item dropdown active">
+              <a className="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Settings
               </a>
               <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -39,7 +36,7 @@ class Nav extends Component {
             </li>
           </ul>
         </div>
-        { this.state.loading &&
+        { this.props.loading &&
           <Loader type="TailSpin" color="#FFFFFF" height="30" width="30" />
         }
       </nav>

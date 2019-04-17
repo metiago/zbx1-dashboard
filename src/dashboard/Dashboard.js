@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import { findAll } from '../utils/FileService'
+import { getIdToken } from '../utils/AuthService'
 
 
 class Dashboard extends Component {
@@ -9,7 +12,8 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      files: []
+      files: [],
+      loading: false
     };
   }
 
@@ -23,6 +27,34 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
+
+    let self = this;
+
+    axios.interceptors.request.use(async (config) => {
+
+      config.headers.Authorization = getIdToken()
+    
+      self.setState({loading: true})
+    
+      return config;
+    
+    }, (error) => {
+      self.setState({loading: false})
+      return Promise.reject(error);
+    });
+    
+    axios.interceptors.response.use(function (response) {
+    
+      self.setState({loading: false})
+      
+      return response;
+    
+    }, function (error) {
+      self.setState({loading: false})
+    
+      return Promise.reject(error);
+    });
+
     this.findAll();
   }
 
@@ -34,11 +66,13 @@ class Dashboard extends Component {
 
       <div>
 
-        <Nav />
+        <Nav loading={this.state.loading}/>
 
         <Dropzone />
 
         <main>
+
+          <div id="loader" />
 
           <div className="my-3 p-3 bg-white rounded shadow-sm">
 

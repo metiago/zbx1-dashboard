@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { post } from 'axios';
-import { getIdToken } from '../../utils/AuthService'
 
 import './Dropzone.css'
 import Alert from '../alert/Alert'
@@ -84,22 +83,12 @@ class Dropzone extends Component {
         let that = this;
 
         const config = {
-            headers: {
-                'content-type': 'multipart/form-data',
-                'Authorization': getIdToken()
-            },
+            
             onUploadProgress: function (progressEvent) {
-                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
                 
-                let i = 0;
-                setInterval(function () {                    
-                    if (i == 100) {
-                        that.setState({showProgressBar: false})
-                    } else {
-                        that.setState({progressBarStyle: { width: `${i++}%` }, progressBarValue:  i++, showProgressBar: true});
-                    }
-                }, 600)
-
+                const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+               
+                that.setState({progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue:  uploadPercentage, showProgressBar: true});
             }
         }        
 
@@ -108,13 +97,13 @@ class Dropzone extends Component {
             formdata.append('file', file);
         }
 
-        const res = post('http://localhost:5000/api/v1/files/upload', formdata, config);
-
-        
-        res.then(function (response) {
+        post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+            
             that.handleHttpResponse(response)
+
         }).catch(function (error) {
             that.handleHttpResponse(error.response)
+            that.setState({showProgressBar: false})
         });
     }
 
@@ -141,11 +130,9 @@ class Dropzone extends Component {
                 message = response.statusText
                 break;
         }
-
-        // FIXME Change it like progress bar updating state
+        
         ReactDOM.render(
-            <Alert clazz={clazz} status={status} message={message} />,
-            document.getElementById('errors')
+            <Alert clazz={clazz} status={status} message={message} />,  document.getElementById('errors')
         );
     }
 
