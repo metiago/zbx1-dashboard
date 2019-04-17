@@ -3,9 +3,9 @@ import axios from 'axios';
 
 import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
+import FileDetail from '../components/modal/FileDetail'
 import { findAll } from '../utils/FileService'
 import { getIdToken } from '../utils/AuthService'
-
 
 class Dashboard extends Component {
 
@@ -13,8 +13,16 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       files: [],
-      loading: false
+      loading: false,
+      modal: false,
+      fileID: null,
+      modalTitle: null,
+      fileOwner: null,
+      fileCreated: null
     };
+
+    this.detail = this.detail.bind(this)
+    this.delete = this.delete.bind(this);
   }
 
   findAll() {
@@ -58,6 +66,20 @@ class Dashboard extends Component {
     this.findAll();
   }
 
+  detail(data) {
+    this.setState(prevState => ({
+      modal: !prevState.modal,
+      fileID: data.id,
+      modalTitle: data.name,
+      fileOwner: data.username,
+      fileCreated: data.created
+    }));
+  }
+
+  delete(data) {
+    console.log(data)
+  }
+
   render() {
 
     const { files } = this.state;
@@ -65,6 +87,8 @@ class Dashboard extends Component {
     return (
 
       <div>
+
+        <FileDetail modal={this.state.modal} fileID={this.state.fileID} title={this.state.modalTitle} username={this.state.fileOwner} created={this.state.fileCreated} detail={this.detail} delete={this.delete}/>
 
         <Nav loading={this.state.loading}/>
 
@@ -84,7 +108,7 @@ class Dashboard extends Component {
                 <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                   <div className="d-flex justify-content-between align-items-center w-100">
                     <strong className="text-gray-dark">{data.name}</strong>
-                    <a>Details</a>
+                    <a onClick={() => this.detail(data)}>Details</a>
                   </div>
                   <span className="d-block">@{data.username}</span>
                 </div>
