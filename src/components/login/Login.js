@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import { login } from '../../utils/AuthService';
 
-const AUTH_SIGNUP = 'http://localhost:5000/users'
+const AUTH_SIGNUP = 'http://localhost:5000/signup'
 
 class Login extends Component {
 
