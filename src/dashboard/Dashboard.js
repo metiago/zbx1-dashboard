@@ -9,7 +9,7 @@ import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
 
-import { getIdToken } from '../utils/AuthService'
+import { getToken, getUsername } from '../utils/AuthService'
 
 class Dashboard extends Component {
 
@@ -34,8 +34,9 @@ class Dashboard extends Component {
   }
 
   findAll() {
+    const username = getUsername().uinf.Username
     let that = this;
-    const res = axios.get('http://localhost:5000/api/v1/files/metiago');
+    const res = axios.get(`http://localhost:5000/api/v1/files/${username}`);
     res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
@@ -50,7 +51,7 @@ class Dashboard extends Component {
 
     axios.interceptors.request.use(async (config) => {
 
-      config.headers.Authorization = getIdToken()
+      config.headers.Authorization = getToken()
 
       self.setState({ loading: true })
 

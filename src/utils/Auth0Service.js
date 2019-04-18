@@ -37,7 +37,7 @@ export function requireAuth(nextState, replace) {
   }
 }
 
-export function getIdToken() {
+export function getToken() {
   return localStorage.getItem(ID_TOKEN_KEY);
 }
 
@@ -72,7 +72,7 @@ export function setIdToken() {
 }
 
 export function isLoggedIn() {
-  const idToken = getIdToken();
+  const idToken = getToken();
   return !!idToken && !isTokenExpired(idToken);
 }
 
