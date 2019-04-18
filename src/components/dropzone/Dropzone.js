@@ -68,9 +68,7 @@ class Dropzone extends Component {
 
         return (
 
-            <div>
-
-                <div id="errors" />
+            <div>               
 
                 <div className={`Dropzone ${this.state.hightlight ? 'Highlight' : ''}`}
                     onDragOver={this.onDragOver}

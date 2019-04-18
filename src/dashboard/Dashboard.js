@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 
 import axios from 'axios';
 
 import ProgressBar from '../components/progress/ProgressBar'
-import Alert from '../components/alert/Alert'
 import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
 
 import { getUserInfo } from '../utils/AuthService'
+
+const FILES_URL = 'http://localhost:5000/api/v1/files'
 
 class Dashboard extends Component {
 
@@ -33,7 +33,7 @@ class Dashboard extends Component {
   findAllFiles() {
     const userInfo = getUserInfo()
     let that = this;
-    const res = axios.get(`http://localhost:5000/api/v1/files/${userInfo.Username}`);
+    const res = axios.get(`${FILES_URL}/${userInfo.Username}`);
     res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
@@ -43,7 +43,6 @@ class Dashboard extends Component {
   }
   
   componentDidMount() {
-    this.findAllUsers();
     this.findAllFiles();
   }
 
@@ -57,8 +56,14 @@ class Dashboard extends Component {
     }));
   }
 
-  delete(data) {
-    console.log(data)
+  delete(fileID) {
+    const that = this;
+    axios.delete(`${FILES_URL}/${fileID}`).then(function (response) {      
+      that.findAllFiles()
+    }).catch(function (error) {
+      console.log(error)      
+      that.setState({ showProgressBar: false })
+    });
   }
 
   upload(files) {
@@ -88,15 +93,12 @@ class Dashboard extends Component {
       let formdata = new FormData();
       formdata.append('file', file);
 
-      console.log(file)
-
       axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
-
         that.setState({ showProgressBar: false })
-        that.findAll()
-        that.handleHttpResponse(response)
+        
+        that.findAllFiles()        
       }).catch(function (error) {
-        that.handleHttpResponse(error.response)
+        
         that.setState({ showProgressBar: false })
       });
     }
@@ -111,47 +113,13 @@ class Dashboard extends Component {
 
     //     post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
 
-    //         that.handleHttpResponse(response)
+    //         
 
     //     }).catch(function (error) {
-    //         that.handleHttpResponse(error.response)
+    //         
     //         that.setState({ showProgressBar: false })
     //     });
     // }
-  }
-
-  handleHttpResponse(response) {
-    console.log(response);
-    let clazz = null;
-    let status = null;
-    let message = null;
-    switch (response.status) {
-      case 200:
-      case 201:
-        clazz = 'alert alert-success'
-        status = response.status
-        message = response.statusText
-        break;
-      case 403:
-        clazz = 'alert alert-warning'
-        status = response.status
-        message = response.statusText
-        break;
-      case 400:
-        clazz = 'alert alert-warning'
-        status = response.status
-        message = response.data.message
-        break;
-      case 500:
-        clazz = 'alert alert-danger'
-        status = response.status
-        message = response.statusText
-        break;
-    }
-
-    ReactDOM.render(
-      <Alert clazz={clazz} status={status} message={message} />, document.getElementById('errors')
-    );
   }
 
   render() {
