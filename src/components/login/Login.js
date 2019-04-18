@@ -1,21 +1,31 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
 import { browserHistory } from 'react-router';
+
+import axios from 'axios';
+
 import { login } from '../../utils/AuthService';
 
+const AUTH_SIGNUP = 'http://localhost:5000/users'
 
 class Login extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       username: null,
       password: null,
+      name: null,
+      email: null
     };
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangeName = this.onChangeName.bind(this);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
     this.login = this.login.bind(this);
+    this.signup = this.signup.bind(this);
   }
 
   onChangeUsername(event) {
@@ -24,6 +34,14 @@ class Login extends Component {
 
   onChangePassword(event) {
     this.setState({ password: event.target.value });
+  }
+
+  onChangeName(event) {
+    this.setState({ name: event.target.value });
+  }
+
+  onChangeEmail(event) {
+    this.setState({ email: event.target.value });
   }
 
   login() {
@@ -42,45 +60,109 @@ class Login extends Component {
     });
   }
 
+  signup() {
+    console.log(this.state)
+    const res = axios.post(AUTH_SIGNUP,
+      {
+        username: this.state.username,
+        password: this.state.password,
+        name: this.state.name,
+        email: this.state.email
+      }
+    );
+
+    res.then(function(response){
+
+      const elem = <div className="alert alert-success" role="alert"> Thanks! Your account has been successfully created. </div>;
+      ReactDOM.render(elem, document.getElementById('errors'));
+      
+    }).catch(function (error) {
+      console.log(error)
+      console.log(error.response)
+    });
+
+  }
+
   render() {
 
     return (
 
-      <div className="text-center">
+      <div>
 
-       
+        <div id="errors" />
 
-        <form className="form-signin">
+        <ul id="tabs" className="nav nav-tabs" role="tablist">
+          <li className="nav-item">
+            <a id="tab-A" href="#pane-A" className="nav-link active" data-toggle="tab" role="tab">Login</a>
+          </li>
+          <li className="nav-item">
+            <a id="tab-B" href="#pane-B" className="nav-link" data-toggle="tab" role="tab">Sign Up</a>
+          </li>
+        </ul>
 
-          <div id="errors" />
+        <div id="content" className="tab-content" role="tablist">
 
-          <img className="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72" />
+          <div id="pane-A" className="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
 
-          <h1 className="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <div id="collapse-A" className="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
 
-          <label htmlFor="inputEmail" className="sr-only">Email address</label>
+              <form className="form-signin">
 
-          <input onChange={this.onChangeUsername} type="text" id="inputEmail" className="form-control" placeholder="Username" required autoFocus />
+                <div className="form-group">
+                  <label htmlFor="inputEmail" className="sr-only">Email address</label>
+                  <input onChange={this.onChangeUsername} type="text" id="inputEmail" className="form-control" placeholder="Username" required autoFocus />
+                </div>
 
-          <label htmlFor="inputPassword" className="sr-only">Password</label>
+                <div className="form-group">
+                  <label htmlFor="inputPassword" className="sr-only">Password</label>
+                  <input onChange={this.onChangePassword} type="password" id="inputPassword" className="form-control" placeholder="Password" required />
+                </div>
 
-          <input onChange={this.onChangePassword} type="password" id="inputPassword" className="form-control" placeholder="Password" required />
+                <button onClick={this.login} className="btn btn-lg btn-primary btn-block" type="button">Sign in</button>
 
-          <div className="checkbox mb-3">
+              </form>
 
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
+            </div>
 
           </div>
 
-          <button onClick={this.login} className="btn btn-lg btn-primary btn-block" type="button">Sign in</button>
+          <div id="pane-B" className="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
 
-          <p className="mt-5 mb-3 text-muted">&copy; Tiago R. 2018-2019</p>
+            <div id="collapse-A" className="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
 
-        </form>
+              <div className="card-body">
+                <form>
+                  <div className="form-row">
+                    <div className="form-group col-md-6">
+                      <label htmlFor="inputUsername">Username</label>
+                      <input onChange={this.onChangeUsername} type="text" className="form-control" id="inputUsername" placeholder="Username" />
+                    </div>
+                    <div className="form-group col-md-6">
+                      <label htmlFor="inputPassword4">Password</label>
+                      <input onChange={this.onChangePassword} type="password" className="form-control" id="inputPassword4" placeholder="Password" />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="inputName">Name</label>
+                    <input onChange={this.onChangeName} type="text" className="form-control" id="inputName" placeholder="Name" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="inputEmail">Email</label>
+                    <input onChange={this.onChangeEmail} type="email" className="form-control" id="inputEmail" placeholder="Email" />
+                    <small className="form-text text-muted">We'll never share your email with anyone else.</small>
+                  </div>
+                  <button onClick={this.signup} type="button" className="btn btn-primary">Sign up</button>
+                </form>
+              </div>
+            </div>
 
-      </div>
+          </div>
+
+          <p className="mt-5 mb-3 text-muted text-center">&copy; Tiago R. 2018-2019</p>
+
+        </div>
+
+      </div >
     );
   }
 }
