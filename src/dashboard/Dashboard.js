@@ -41,7 +41,7 @@ class Dashboard extends Component {
       console.log(error.response)
     });
   }
-  
+
   componentDidMount() {
     this.findAllFiles();
   }
@@ -57,13 +57,20 @@ class Dashboard extends Component {
   }
 
   delete(fileID) {
-    const that = this;
-    axios.delete(`${FILES_URL}/${fileID}`).then(function (response) {      
-      that.findAllFiles()
-    }).catch(function (error) {
-      console.log(error)      
-      that.setState({ showProgressBar: false })
-    });
+
+    const yes = window.confirm("Delete ?");
+    if (yes == true) {
+      const that = this;
+      axios.delete(`${FILES_URL}/${fileID}`).then(function (response) {
+        that.findAllFiles()
+        that.setState(prevState => ({
+          modal: !prevState.modal
+        }))
+      }).catch(function (error) {
+        console.log(error)
+        that.setState({ showProgressBar: false })
+      });
+    }
   }
 
   upload(files) {
@@ -95,10 +102,10 @@ class Dashboard extends Component {
 
       axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
         that.setState({ showProgressBar: false })
-        
-        that.findAllFiles()        
+
+        that.findAllFiles()
       }).catch(function (error) {
-        
+
         that.setState({ showProgressBar: false })
       });
     }
