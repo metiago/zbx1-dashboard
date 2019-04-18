@@ -4,6 +4,7 @@ import registerServiceWorker from './registerServiceWorker';
 import { Router, Route, browserHistory } from 'react-router';
 
 import Dashboard from './dashboard/Dashboard';
+import Profile from './dashboard/Profile';
 import Callback from './dashboard/Callback';
 
 import { requireAuth } from './utils/AuthService';
@@ -16,6 +17,7 @@ const Root = () => {
       <Router history={browserHistory}>
         <Route path="/" component={App} />
         <Route path="/dashboard" component={Dashboard} onEnter={requireAuth} />
+        <Route path="/profile" component={Profile} onEnter={requireAuth} />
         <Route path="/callback" component={Callback} />
       </Router>
     </div>

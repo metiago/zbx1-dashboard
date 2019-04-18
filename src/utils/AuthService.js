@@ -28,8 +28,9 @@ export function getToken() {
   return localStorage.getItem(ID_TOKEN_KEY);
 }
 
-export function getUsername() {
-  return decodeToken(getToken())
+export function getUserInfo() {
+  const decoded = decodeToken(getToken())
+  return decoded.uinf
 }
 
 export function requireAuth(nextState, replace) {

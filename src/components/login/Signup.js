@@ -8,6 +8,7 @@ const AUTH_SIGNUP = 'http://localhost:5000/signup'
 class Signup extends Component {
 
     constructor(props) {
+        
         super(props);
 
         this.state = {
@@ -60,7 +61,6 @@ class Signup extends Component {
             console.log(error)
             console.log(error.response)
         });
-
     }
 
     render() {
@@ -87,7 +87,7 @@ class Signup extends Component {
                     <input onChange={this.onChangeEmail} type="email" className="form-control" id="inputEmail" placeholder="Email" />
                     <small className="form-text text-muted">We'll never share your email with anyone else.</small>
                 </div>
-                <button onClick={this.signup} type="button" className="btn btn-primary">Sign up</button>
+                <button onClick={this.signup} type="button" className="btn btn-primary">Send</button>
             </form>
 
         );

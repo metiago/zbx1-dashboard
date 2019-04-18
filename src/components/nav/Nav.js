@@ -1,11 +1,52 @@
 import React, { Component } from 'react';
-import { login, logout, isLoggedIn } from '../../utils/AuthService';
 import Loader from 'react-loader-spinner'
+
+import axios from 'axios';
+
+import { getToken } from '../../utils/AuthService'
+import { login, logout, isLoggedIn } from '../../utils/AuthService';
 
 class Nav extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      progressBarStyle: null,
+      progressBarValue: 0,
+      showProgressBar: false
+    };
+  }
+
+  componentDidMount() {
+
+    let self = this;
+
+    axios.interceptors.request.use(async (config) => {
+
+      config.headers.Authorization = getToken()
+
+      self.setState({ loading: true })
+
+      return config;
+
+    }, (error) => {
+      self.setState({ loading: false })
+      return Promise.reject(error);
+    });
+
+    axios.interceptors.response.use(function (response) {
+
+      self.setState({ loading: false })
+
+      return response;
+
+    }, function (error) {
+      self.setState({ loading: false })
+
+      return Promise.reject(error);
+    });
+
   }
 
   render() {
@@ -36,7 +77,7 @@ class Nav extends Component {
             </li>
           </ul>
         </div>
-        { this.props.loading &&
+        { this.state.loading &&
           <Loader type="TailSpin" color="#FFFFFF" height="30" width="30" />
         }
       </nav>

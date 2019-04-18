@@ -9,7 +9,7 @@ import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
 
-import { getToken, getUsername } from '../utils/AuthService'
+import { getUserInfo } from '../utils/AuthService'
 
 class Dashboard extends Component {
 
@@ -22,10 +22,7 @@ class Dashboard extends Component {
       fileID: null,
       modalTitle: null,
       fileOwner: null,
-      fileCreated: null,
-      progressBarStyle: null,
-      progressBarValue: 0,
-      showProgressBar: false
+      fileCreated: null
     };
 
     this.detail = this.detail.bind(this)
@@ -33,10 +30,10 @@ class Dashboard extends Component {
     this.upload = this.upload.bind(this)
   }
 
-  findAll() {
-    const username = getUsername().uinf.Username
+  findAllFiles() {
+    const userInfo = getUserInfo()
     let that = this;
-    const res = axios.get(`http://localhost:5000/api/v1/files/${username}`);
+    const res = axios.get(`http://localhost:5000/api/v1/files/${userInfo.Username}`);
     res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
     }).catch(function (error) {
@@ -44,37 +41,10 @@ class Dashboard extends Component {
       console.log(error.response)
     });
   }
-
+  
   componentDidMount() {
-
-    let self = this;
-
-    axios.interceptors.request.use(async (config) => {
-
-      config.headers.Authorization = getToken()
-
-      self.setState({ loading: true })
-
-      return config;
-
-    }, (error) => {
-      self.setState({ loading: false })
-      return Promise.reject(error);
-    });
-
-    axios.interceptors.response.use(function (response) {
-
-      self.setState({ loading: false })
-
-      return response;
-
-    }, function (error) {
-      self.setState({ loading: false })
-
-      return Promise.reject(error);
-    });
-
-    this.findAll();
+    this.findAllUsers();
+    this.findAllFiles();
   }
 
   detail(data) {
@@ -93,7 +63,7 @@ class Dashboard extends Component {
 
   upload(files) {
 
-    let that = this;    
+    let that = this;
 
     // TODO: CHUNK UPLOAD FOR LARGE FILES        
     // let blob = files[0]
@@ -194,7 +164,7 @@ class Dashboard extends Component {
 
         <FileDetail modal={this.state.modal} fileID={this.state.fileID} title={this.state.modalTitle} username={this.state.fileOwner} created={this.state.fileCreated} detail={this.detail} delete={this.delete} />
 
-        <Nav loading={this.state.loading} />
+        <Nav />
 
         <Dropzone upload={this.upload} />
 
