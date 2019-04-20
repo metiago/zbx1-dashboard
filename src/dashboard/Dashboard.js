@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 
 import axios from 'axios';
 
@@ -10,6 +11,8 @@ import FileDetail from '../components/modal/FileDetail'
 import { getUserInfo } from '../utils/AuthService'
 
 const FILES_URL = 'http://localhost:5000/api/v1/files'
+
+const MAX_FILE_SIZE_IN_BYTES = 16000000
 
 class Dashboard extends Component {
 
@@ -77,7 +80,7 @@ class Dashboard extends Component {
 
     let that = this;
 
-    // TODO: CHUNK UPLOAD FOR LARGE FILES        
+    // TODO: Implement chunking upload as well as a cancel function        
     // let blob = files[0]
     // let BYTES_PER_CHUNK = parseInt(1048576, 10);
     // let SIZE = blob.size;
@@ -87,27 +90,45 @@ class Dashboard extends Component {
 
     const config = {
 
+      headers: {
+        'Content-Type': `multipart/form-data`,
+      },
+
       onUploadProgress: function (progressEvent) {
-
+        console.log(progressEvent)        
         const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
-
         that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
       }
     }
 
     for (let file of files) {
 
-      let formdata = new FormData();
-      formdata.append('file', file);
+      if (file.size > MAX_FILE_SIZE_IN_BYTES) {
+        const elem = <div className="alert alert-danger" role="alert"> Maximum file size 16MB </div>;
+        ReactDOM.render(elem, document.getElementById('errors'));
 
-      axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
-        that.setState({ showProgressBar: false })
+      } else if (file.type) {
 
-        that.findAllFiles()
-      }).catch(function (error) {
+        let formdata = new FormData();
+        formdata.append('file', file, file.name);
 
-        that.setState({ showProgressBar: false })
-      });
+        axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+
+          console.log(response)
+          that.setState({ showProgressBar: false })
+          that.findAllFiles()
+
+        }).catch(function (error) {
+
+          that.setState({ showProgressBar: false })
+        });
+
+      } else {
+
+        const elem = <div className="alert alert-danger" role="alert"> Invalid file type </div>;
+        ReactDOM.render(elem, document.getElementById('errors'));
+
+      }
     }
 
     // while (start < SIZE) {

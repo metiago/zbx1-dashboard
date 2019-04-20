@@ -33,12 +33,14 @@ class Nav extends Component {
       return config;
 
     }, (error) => {
+     
       self.setState({ loading: false })
       return Promise.reject(error);
     });
 
     axios.interceptors.response.use(function (response) {
 
+      // FIXME it only should be called in button actions
       self.handleHttpResponse(response)
 
       self.setState({ loading: false })
@@ -46,7 +48,7 @@ class Nav extends Component {
       return response;
 
     }, function (error) {
-    
+      
       self.handleHttpResponse(error.response)
       self.setState({ loading: false })
 

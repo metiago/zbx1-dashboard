@@ -54,7 +54,7 @@ class Dropzone extends Component {
     onDrop(event) {
         event.preventDefault();
         if (this.props.disabled) return;
-        const files = event.dataTransfer.files;
+        const files = event.dataTransfer.files
         if (this.props.onFilesAdded) {
             const array = this.fileListToArray(files);
             this.props.onFilesAdded(array);
@@ -62,13 +62,24 @@ class Dropzone extends Component {
         this.setState({ hightlight: false });
         // calling parent function
         this.props.upload(files);
+
+        // if (event.dataTransfer.types) {
+        //     for (var i = 0; i < event.dataTransfer.types.length; i++) {
+        //         if (event.dataTransfer.types == "Files") {
+        //             console.log('***')
+        //             console.log(files[i])
+        //         } else {
+        //             console.log('folder')
+        //         }
+        //     }
+        // }
     }
 
     render() {
 
         return (
 
-            <div>               
+            <div>
 
                 <div className={`Dropzone ${this.state.hightlight ? 'Highlight' : ''}`}
                     onDragOver={this.onDragOver}

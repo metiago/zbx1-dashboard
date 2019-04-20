@@ -2,14 +2,17 @@
 import axios from 'axios';
 import decode from 'jwt-decode';
 import { browserHistory } from 'react-router';
-const ID_TOKEN_KEY = 'access_token';
+
+
+const URL = 'http://localhost:5000/auth/login'
+const TOKEN_KEY = 'access_token';
 
 export async function login(username, password) {
 
   try {
 
-    const res = await axios.post('http://localhost:5000/auth/login', { username: username, password: password });
-    localStorage.setItem(ID_TOKEN_KEY, res.data.token);
+    const res = await axios.post(URL, { username: username, password: password });
+    localStorage.setItem(TOKEN_KEY, res.data.token);
   }
   catch (error) {
     console.log(error);
@@ -25,7 +28,7 @@ export function logout() {
 }
 
 export function getToken() {
-  return localStorage.getItem(ID_TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 export function getUserInfo() {
@@ -60,7 +63,7 @@ function getTokenExpirationDate(encodedToken) {
 }
 
 function clearAccessToken() {
-  localStorage.removeItem(ID_TOKEN_KEY);
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 function urlBase64Decode(str) {
