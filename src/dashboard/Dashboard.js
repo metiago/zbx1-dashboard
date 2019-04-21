@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 
 import axios from 'axios';
 
@@ -8,6 +7,7 @@ import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
 
+import { handleHttpResponse, validationError, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
 
 const FILES_URL = 'http://localhost:5000/api/v1/files'
@@ -20,12 +20,11 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       files: [],
-      loading: false,
       modal: false,
-      fileID: null,
-      modalTitle: null,
-      fileOwner: null,
-      fileCreated: null
+      fileID: '',
+      modalTitle: '',
+      fileOwner: '',
+      fileCreated: ''
     };
 
     this.detail = this.detail.bind(this)
@@ -35,7 +34,7 @@ class Dashboard extends Component {
 
   findAllFiles() {
     const userInfo = getUserInfo()
-    let that = this;
+    const that = this;
     const res = axios.get(`${FILES_URL}/${userInfo.Username}`);
     res.then(function (res) {
       that.setState({ files: res.data.slice(0, 50) });
@@ -43,7 +42,7 @@ class Dashboard extends Component {
       console.log(error)
       console.log(error.response)
     });
-  }
+  }  
 
   componentDidMount() {
     this.findAllFiles();
@@ -62,13 +61,14 @@ class Dashboard extends Component {
   delete(fileID) {
 
     const yes = window.confirm("Delete ?");
-    if (yes == true) {
+    if (yes === true) {
       const that = this;
       axios.delete(`${FILES_URL}/${fileID}`).then(function (response) {
         that.findAllFiles()
         that.setState(prevState => ({
           modal: !prevState.modal
         }))
+        validationSuccess('File has been deleted')
       }).catch(function (error) {
         console.log(error)
         that.setState({ showProgressBar: false })
@@ -95,8 +95,7 @@ class Dashboard extends Component {
       },
 
       onUploadProgress: function (progressEvent) {
-        console.log(progressEvent)        
-        const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+        const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
         that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
       }
     }
@@ -104,8 +103,8 @@ class Dashboard extends Component {
     for (let file of files) {
 
       if (file.size > MAX_FILE_SIZE_IN_BYTES) {
-        const elem = <div className="alert alert-danger" role="alert"> Maximum file size 16MB </div>;
-        ReactDOM.render(elem, document.getElementById('errors'));
+        
+        validationError('Maximum file size 16MB')
 
       } else if (file.type) {
 
@@ -113,9 +112,9 @@ class Dashboard extends Component {
         formdata.append('file', file, file.name);
 
         axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
-
-          console.log(response)
+          
           that.setState({ showProgressBar: false })
+          validationSuccess('File has been successfully updated.')
           that.findAllFiles()
 
         }).catch(function (error) {
@@ -125,8 +124,7 @@ class Dashboard extends Component {
 
       } else {
 
-        const elem = <div className="alert alert-danger" role="alert"> Invalid file type </div>;
-        ReactDOM.render(elem, document.getElementById('errors'));
+        validationError('Invalid file type')
 
       }
     }

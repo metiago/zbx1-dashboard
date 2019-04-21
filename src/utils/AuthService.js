@@ -33,7 +33,7 @@ export function getToken() {
 
 export function getUserInfo() {
   const decoded = decodeToken(getToken())
-  return decoded.uinf
+  return decoded ? decoded.uinf : null 
 }
 
 export function requireAuth(nextState, replace) {
@@ -86,7 +86,7 @@ function urlBase64Decode(str) {
     }
 
     default: {
-      throw "Illegal base64url string!";
+      throw Error("Illegal base64url string!");
     }
   }
 
@@ -95,18 +95,23 @@ function urlBase64Decode(str) {
 
 function decodeToken(token) {
 
-  var parts = token.split(".");
+  if (token) {
+    
+    var parts = token.split(".");
 
-  if (parts.length !== 3) {
-    throw new Error("JWT must have 3 parts");
+    if (parts.length !== 3) {
+      throw new Error("JWT must have 3 parts");
+    }
+
+    var decoded = urlBase64Decode(parts[1]);
+
+    if (!decoded) {
+      throw new Error("Cannot decode the token");
+    }
+
+    return JSON.parse(decoded);
   }
 
-  var decoded = urlBase64Decode(parts[1]);
-
-  if (!decoded) {
-    throw new Error("Cannot decode the token");
-  }
-
-  return JSON.parse(decoded);
+  return null
 }
 

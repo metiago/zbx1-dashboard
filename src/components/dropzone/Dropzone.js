@@ -60,6 +60,7 @@ class Dropzone extends Component {
             this.props.onFilesAdded(array);
         }
         this.setState({ hightlight: false });
+
         // calling parent function
         this.props.upload(files);
 
@@ -74,13 +75,14 @@ class Dropzone extends Component {
         //     }
         // }
     }
-
+    
+    // TODO Change it to reactive component
     render() {
 
         return (
 
             <div>
-
+                
                 <div className={`Dropzone ${this.state.hightlight ? 'Highlight' : ''}`}
                     onDragOver={this.onDragOver}
                     onDragLeave={this.onDragLeave}

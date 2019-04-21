@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
-import Loader from 'react-loader-spinner'
 
-import axios from 'axios';
-
-import Alert from '../alert/Alert'
-import { getToken } from '../../utils/AuthService'
 import { login, logout, isLoggedIn } from '../../utils/AuthService';
 
 class Nav extends Component {
 
   constructor(props) {
+
     super(props);
 
     this.state = {
@@ -18,76 +13,6 @@ class Nav extends Component {
       progressBarValue: 0,
       showProgressBar: false
     };
-  }
-
-  componentDidMount() {
-
-    let self = this;
-
-    axios.interceptors.request.use(async (config) => {
-
-      config.headers.Authorization = getToken()
-
-      self.setState({ loading: true })
-
-      return config;
-
-    }, (error) => {
-     
-      self.setState({ loading: false })
-      return Promise.reject(error);
-    });
-
-    axios.interceptors.response.use(function (response) {
-
-      // FIXME it only should be called in button actions
-      self.handleHttpResponse(response)
-
-      self.setState({ loading: false })
-
-      return response;
-
-    }, function (error) {
-      
-      self.handleHttpResponse(error.response)
-      self.setState({ loading: false })
-
-      return Promise.reject(error);
-    });
-
-  }
-
-  handleHttpResponse(response) {
-    let clazz = null;
-    let status = null;
-    let message = null;
-    switch (response.status) {
-      case 200:
-      case 201:
-        clazz = 'alert alert-success'
-        status = response.status
-        message = response.statusText
-        break;
-      case 403:
-        clazz = 'alert alert-warning'
-        status = response.status
-        message = response.statusText
-        break;
-      case 400:
-        clazz = 'alert alert-warning'
-        status = response.status
-        message = response.data.message
-        break;
-      case 500:
-        clazz = 'alert alert-danger'
-        status = response.status
-        message = response.statusText
-        break;
-    }
-
-    ReactDOM.render(
-      <Alert clazz={clazz} status={status} message={message} />, document.getElementById('errors')
-    );
   }
 
   render() {
@@ -104,12 +29,14 @@ class Nav extends Component {
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav">
               <li className="nav-item active">
-                <a className="nav-link" href="/dashboard">Dashboard</a>
+                {
+                  (isLoggedIn()) ? (<a className="nav-link" href='/dashboard'> Dashboard </a>) : ''
+                }
               </li>
               <li className="nav-item dropdown active">
-                <a className="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Settings
-              </a>
+                {
+                  (isLoggedIn()) ? (<a className="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Settings </a>) : ''
+                }
                 <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <a className="dropdown-item" href="/profile">Profile</a>
                   <hr />
@@ -120,12 +47,11 @@ class Nav extends Component {
               </li>
             </ul>
           </div>
-          {this.state.loading &&
-            <Loader type="TailSpin" color="#FFFFFF" height="30" width="30" />
-          }
+
+          <div id="loader" />
         </nav>
 
-        <div id="errors" />
+        <div id="alert" />
 
       </div>
     );

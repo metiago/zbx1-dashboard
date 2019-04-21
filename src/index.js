@@ -11,9 +11,10 @@ import { requireAuth } from './utils/AuthService';
 
 import App from './App'
 
+
 const Root = () => {
   return (
-    <div className="container">
+    <div className="container">     
       <Router history={browserHistory}>
         <Route path="/" component={App} />
         <Route path="/dashboard" component={Dashboard} onEnter={requireAuth} />

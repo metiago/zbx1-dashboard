@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 
 import axios from 'axios';
 
 import Nav from '../components/nav/Nav'
+import Input from '../components/input/Input'
 
+import { handleHttpResponse, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
-import Signup from '../components/login/Signup';
+
+import Button from '../components/button/Button';
 
 const AUTH_SIGNUP = 'http://localhost:5000/signup'
 const USERS_URL = 'http://localhost:5000/api/v1/users'
@@ -17,11 +19,11 @@ class Profile extends Component {
     super(props);
 
     this.state = {
-      ID: null,
-      username: null,
-      password: null,
-      name: null,
-      email: null
+      ID: '',
+      username: '',
+      password: '',
+      name: '',
+      email: ''
     };
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
@@ -59,13 +61,16 @@ class Profile extends Component {
 
     const userInfo = getUserInfo()
 
-    axios.get(`${USERS_URL}/${userInfo.ID}`).then(function (response) {
+    if (userInfo) {
 
-      that.setState({ ID: response.data.id, username: response.data.username, password: response.data.password, name: response.data.name, email: response.data.email})
+      axios.get(`${USERS_URL}/${userInfo.ID}`).then(function (response) {
 
-    }).catch(function (error) {
-      console.log(error)
-    })
+        that.setState({ ID: response.data.id, username: response.data.username, password: response.data.password, name: response.data.name, email: response.data.email })
+
+      }).catch(function (error) {
+        console.log(error)
+      })
+    }
   }
 
   signup() {
@@ -80,13 +85,11 @@ class Profile extends Component {
           email: this.state.email
         }
       ).then(function (response) {
-
-        const elem = <div className="alert alert-success" role="alert"> OK! Your account has been successfully updated. </div>;
-        ReactDOM.render(elem, document.getElementById('errors'));
+      
+        handleHttpResponse(response)
 
       }).catch(function (error) {
         console.log(error)
-        console.log(error.response)
       });
 
     } else {
@@ -99,9 +102,8 @@ class Profile extends Component {
           email: this.state.email
         }
       ).then(function (response) {
-
-        const elem = <div className="alert alert-success" role="alert"> Thanks! Your account has been successfully created. </div>;
-        ReactDOM.render(elem, document.getElementById('errors'));
+          
+        validationSuccess('Thanks! Your account has been successfully created.')
 
       }).catch(function (error) {
         console.log(error)
@@ -117,11 +119,25 @@ class Profile extends Component {
       <div>
 
         <Nav />
-
-        <Signup onChangeName={this.onChangeName} onChangeEmail={this.onChangeEmail} onChangeUsername={this.onChangeUsername} onChangePassword={this.onChangePassword} 
-                signup={this.signup}
-                username={this.state.username} name={this.state.name} email={this.state.email} password={this.state.password}/>
-
+        
+        <form>
+          <div className="form-row">
+            <div className="form-group col-md-6">
+              <Input id="username" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
+            </div>
+            <div className="form-group col-md-6">
+              <Input id="password" text="Password" onChange={this.onChangePassword} type="password" value={this.state.password} />
+            </div>
+          </div>
+          <div className="form-group">
+            <Input id="name" text="Name" onChange={this.onChangeName} type="text" value={this.state.name} />
+          </div>
+          <div className="form-group">
+            <Input id="email" text="Email" onChange={this.onChangeEmail} type="email" value={this.state.email} />
+            <small className="form-text text-muted">We'll never share your email with anyone else.</small>
+          </div>
+          <Button signup={this.signup} text="Send" clazz="btn btn-primary" />
+        </form>
       </div>
     );
   }

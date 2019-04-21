@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
 import { browserHistory } from 'react-router';
 
-import Signup from "./Signup";
+import Loader from 'react-loader-spinner'
+
 import { login } from '../../utils/AuthService';
+import Profile from '../../dashboard/Profile';
+import { validationError } from '../../utils/Request';
+import Nav from '../nav/Nav';
 
 class Login extends Component {
 
@@ -11,6 +14,7 @@ class Login extends Component {
     super(props);
 
     this.state = {
+      loader: false,
       username: null,
       password: null
     };
@@ -30,16 +34,18 @@ class Login extends Component {
 
   login() {
 
+    const that = this
+
+    that.setState({ loader: true })
+
     login(this.state.username, this.state.password).then(function (ok) {
 
       if (ok) {
         browserHistory.push('/dashboard');
       }
       else {
-
-        const elem = <div className="alert alert-danger" role="alert"> Username/Password invalids. </div>;
-        ReactDOM.render(elem, document.getElementById('errors'));
-
+        that.setState({ loader: false })
+        validationError('Username/Password invalids.')
       }
     });
   }
@@ -50,7 +56,7 @@ class Login extends Component {
 
       <div>
 
-        <div id="errors" />
+        <Nav />
 
         <ul id="tabs" className="nav nav-tabs" role="tablist">
           <li className="nav-item">
@@ -79,6 +85,10 @@ class Login extends Component {
                   <input onChange={this.onChangePassword} type="password" id="inputPassword" className="form-control" placeholder="Password" required />
                 </div>
 
+                <div className="form-group">
+                  {this.state.loader && <Loader type="ThreeDots" color="#000" height="30" width="30" />}
+                </div>
+
                 <button onClick={this.login} className="btn btn-lg btn-primary btn-block" type="button">Sign in</button>
 
               </form>
@@ -92,8 +102,8 @@ class Login extends Component {
             <div id="collapse-A" className="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
 
               <div className="card-body">
-              
-              <Signup/>
+
+                <Profile />
 
               </div>
             </div>
