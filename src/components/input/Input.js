@@ -9,7 +9,8 @@ const Input = (props) => (
             className="form-control"
             id={props.id}
             placeholder={props.text}
-            value={props.value} />
+            value={props.value} 
+            disabled={props.disabled}/>
     </div>
 );
 

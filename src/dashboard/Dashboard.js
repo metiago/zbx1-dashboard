@@ -7,7 +7,7 @@ import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
 
-import { handleHttpResponse, validationError, validationSuccess } from '../utils/Request'
+import { validationError, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
 
 const FILES_URL = 'http://localhost:5000/api/v1/files'
