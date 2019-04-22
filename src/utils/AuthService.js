@@ -15,7 +15,6 @@ export async function login(username, password) {
     localStorage.setItem(TOKEN_KEY, res.data.token);
   }
   catch (error) {
-    console.log(error);
     return false;
   }
 

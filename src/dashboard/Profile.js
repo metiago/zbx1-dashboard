@@ -9,10 +9,7 @@ import { handleHttpResponse, validationSuccess, validationError } from '../utils
 import { getUserInfo } from '../utils/AuthService'
 
 import Button from '../components/button/Button';
-import { FormErrors } from '../components/error/FormErrors';
-import ChangePassword from '../components/modal/ChangePassword';
 
-// TODO Implment form to change my password
 const AUTH_SIGNUP = 'http://localhost:5000/signup'
 const USERS_URL = 'http://localhost:5000/api/v1/users'
 
@@ -29,20 +26,16 @@ class Profile extends Component {
       updated_password: '',
       name: '',
       email: '',
-      formErrors: { email: '', password: '' },
-      formValid: false,
-      emailValid: false,
-      usernameValid: false,
-      passwordValid: false,
-      confirmPasswordValid: false,
-      nameValid: false,
+      edit: false,
       disabled: false,
-      modal: false
+      modal: false,
+      errors: [],
     };
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
+    this.onChangeUpdatedPassword = this.onChangeUpdatedPassword.bind(this);
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeEmail = this.onChangeEmail.bind(this);
     this.signup = this.signup.bind(this);
@@ -57,76 +50,28 @@ class Profile extends Component {
   }
 
   onChangeUsername(event) {
-    const username = event.target.id;
-    const value = event.target.value;
-    this.setState({ [username]: value }, () => { this.validateField(username, value) });
+    // this.setState({ username: event.target.value }, () => this.validateForm());
+    this.setState({ username: event.target.value });
   }
 
   onChangePassword(event) {
-    const password = event.target.id;
-    const value = event.target.value;
-    this.setState({ [password]: value }, () => { this.validateField(password, value) });
+    this.setState({ password: event.target.value });
   }
 
   onChangeConfirmPassword(event) {
-    const confirmPassword = event.target.id;
-    const value = event.target.value;
-    this.setState({ [confirmPassword]: value }, () => { this.validateField(confirmPassword, value) });
+    this.setState({ confirm_password: event.target.value });
+  }
+
+  onChangeUpdatedPassword(event) {
+    this.setState({ updated_password: event.target.value });
   }
 
   onChangeName(event) {
-    const name = event.target.id;
-    const value = event.target.value;
-    this.setState({ [name]: value }, () => { this.validateField(name, value) });
+    this.setState({ name: event.target.value });
   }
 
   onChangeEmail(event) {
-    const email = event.target.id;
-    const value = event.target.value;
-    this.setState({ [email]: value }, () => { this.validateField(email, value) });
-  }
-
-  validateField(fieldName, value) {
-
-    let fieldValidationErrors = this.state.formErrors;
-    let usernameValid = this.state.usernameValid;
-    let passwordValid = this.state.passwordValid;
-    let confirmPasswordValid = this.state.confirmPasswordValid;
-    let nameValid = this.state.nameValid;
-    let emailValid = this.state.emailValid;
-
-    switch (fieldName) {
-      case 'username':
-        usernameValid = value.length >= 5;
-        fieldValidationErrors.username = usernameValid ? '' : ' is too short';
-        break;
-      case 'password':
-      case 'confirm_password':
-        passwordValid = value.length >= 5;
-        fieldValidationErrors.password = passwordValid ? '' : ' is too short';
-
-        confirmPasswordValid = this.state.confirm_password === this.state.password;
-        fieldValidationErrors.confirm_passoword = confirmPasswordValid ? '' : ' not match';
-        break;
-      case 'name':
-        nameValid = value.length >= 5;
-        fieldValidationErrors.name = nameValid ? '' : ' is too short';
-        break;
-      case 'email':
-        emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-        fieldValidationErrors.email = emailValid ? '' : ' is invalid';
-        break;
-      default:
-        break;
-    }
-
-    this.setState({
-      formErrors: fieldValidationErrors, nameValid: nameValid, usernameValid: usernameValid, passwordValid: passwordValid, confirmPasswordValid: confirmPasswordValid, emailValid: emailValid
-    }, this.validateForm);
-  }
-
-  validateForm() {
-    this.setState({ formValid: this.state.usernameValid && this.state.passwordValid && this.state.confirmPasswordValid && this.state.emailValid && this.state.nameValid });
+    this.setState({ email: event.target.value });
   }
 
   findAllUsers() {
@@ -137,12 +82,12 @@ class Profile extends Component {
 
     if (userInfo) {
 
-      this.setState({disabled: true})
+      this.setState({ disabled: true })
 
       axios.get(`${USERS_URL}/${userInfo.ID}`).then(function (response) {
 
         that.setState({ ID: response.data.id, username: response.data.username, password: response.data.password, name: response.data.name, email: response.data.email })
-        that.setState({ formValid: true });
+        that.setState({ edit: true });
 
       }).catch(function (error) {
         console.log(error)
@@ -150,57 +95,130 @@ class Profile extends Component {
     }
   }
 
-  signup() {
+  validateForm() {
 
-    const form = {
-      username: this.state.username,
-      password: this.state.password,
-      confirm_password: this.state.confirm_password,
-      name: this.state.name,
-      email: this.state.email
+    let errors = [];
+
+    if (this.state.username === '') {
+      errors['username'] = 'Username must be not empty'
     }
 
-    if (this.state.ID) {
+    if (!this.state.edit) {
 
-      axios.put(`${USERS_URL}/${this.state.ID}`, form
-        
-      ).then(function (response) {
+      if (this.state.password === '') {
+        errors['password'] = 'Password must be not empty'
+      }
 
-        validationSuccess('Ok! Your account has been successfully updated.')
+      if (this.state.confirm_password === '') {
+        errors['confirm_password'] = 'Confirm must be not empty'
+      }
 
-      }).catch(function (error) {
+      if (this.state.password !== this.state.confirm_password) {
+        errors['confirm_password'] = 'Confirm password not match'
+      }
 
-        handleHttpResponse(error.response)
+    }
 
-      });
+    if (this.state.name === '') {
+      errors['name'] = 'Field must be not empty'
+    }
 
-    } else {
+    if (this.state.email === '') {
+      errors['email'] = 'Field must be not empty'
+    }
+    else {
+      let match = this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+      if (!match) {
+        errors['email'] = 'Field is invalid';
+      }
+    }
 
-      axios.post(AUTH_SIGNUP, form).then(function (response) {
+    this.setState({ errors: errors })
 
-        validationSuccess('Thanks! Your account has been successfully created.')
+    return Object.keys(errors).length === 0;
+  }
 
-      }).catch(function (error) {
-        validationError(error.response)
-        console.log(error)
-        console.log(error.response)
-      });
+  validatePasswords() {
+
+    let errors = [];
+
+    if (this.state.password === '') {
+      errors['password'] = 'Old password must be not empty'
+    }
+
+    if (this.state.confirm_password === '') {
+      errors['confirm_password'] = 'New password must be not empty'
+    }
+
+    if (this.state.updated_password !== this.state.confirm_password) {
+      errors['updated_password'] = 'Confirm password not match'
+    }
+
+    this.setState({ errors: errors })
+
+    return Object.keys(errors).length === 0;
+
+  }
+
+  signup(e) {
+
+    e.preventDefault();
+
+    if (this.validateForm()) {
+      
+      if (this.state.ID) {
+
+        const form = {
+          name: this.state.name,
+          email: this.state.email,
+          username: this.state.username,     
+        }
+
+        axios.put(`${USERS_URL}/${this.state.ID}`, form).then(function (response) {
+
+          validationSuccess('Ok! Your account has been successfully updated.')
+
+        }).catch(function (error) {
+
+          handleHttpResponse(error.response)
+
+        });
+
+      } else {
+
+        const form = {
+          name: this.state.name,
+          email: this.state.email,
+          username: this.state.username,
+          password: this.state.password,
+          confirm_password: this.state.confirm_password        
+        }
+
+        axios.post(AUTH_SIGNUP, form).then(function (response) {
+
+          validationSuccess('Thanks! Your account has been successfully created.')
+
+        }).catch(function (error) {
+          validationError(error.response)
+          console.log(error)
+          console.log(error.response)
+        });
+      }
     }
   }
 
   editPassword() {
-    
-    this.setState(prevState => ({
-      modal: !prevState.modal
-    }));
+    this.setState({ disabled: false })
   }
 
   changePassword() {
 
-    const that = this
+    if (this.validatePasswords()) {
 
-    axios.put(`${USERS_URL}/${this.state.ID}/update-password`,
-        {          
+      const that = this
+
+      axios.put(`${USERS_URL}/${this.state.ID}/update-password`,
+        {
           username: this.state.username,
           password: this.state.password,
           confirm_password: this.state.confirm_password,
@@ -208,14 +226,16 @@ class Profile extends Component {
         }
       ).then(function (response) {
 
-        that.editPassword()
+        that.setState({disabled: true, password: '', confirm_password: '', updated_password: ''})
         validationSuccess('Ok! Your password has been successfully updated.')
 
       }).catch(function (error) {
 
-        handleHttpResponse(error.response)
+        handleHttpResponse(error)
 
       });
+
+    }
   }
 
   render() {
@@ -226,31 +246,58 @@ class Profile extends Component {
 
         <Nav />
 
-        <ChangePassword modal={this.state.modal} save={this.changePassword} close={this.editPassword} onChangePassword={this.onChangePassword} onChangeConfirmPassword={this.onChangeConfirmPassword}/>
-
-        <FormErrors formErrors={this.state.formErrors}/>
-
         <form>
-          <div className="form-row">
-            <div className="form-group col-md-4">
-              <Input id="username" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
-            </div>
-            <div className="form-group col-md-4">
-              <Input id="password" text="Password" onChange={this.onChangePassword} type="password" value={this.state.password} disabled={this.state.disabled}/>
-            </div>
-            <div className="form-group col-md-4">
-              <Input id="confirm_password" text="Confirm Password" onChange={this.onChangeConfirmPassword} type="password" value={this.state.confirm_passoword} disabled={this.state.disabled}/>
-              {this.state.disabled && <small className="form-text text-muted"> <a onClick={this.editPassword}> Change password</a> </small> }
-            </div>
-          </div>
           <div className="form-group">
             <Input id="name" text="Name" onChange={this.onChangeName} type="text" value={this.state.name} />
+            <span style={{ color: "red" }}>{this.state.errors["name"]}</span>
           </div>
           <div className="form-group">
             <Input id="email" text="Email" onChange={this.onChangeEmail} type="email" value={this.state.email} />
             <small className="form-text text-muted">We'll never share your email with anyone else.</small>
+            <span style={{ color: "red" }}>{this.state.errors["email"]}</span>
           </div>
-          <Button disabled={!this.state.formValid} signup={this.signup} text="Send" clazz="btn btn-primary" />
+          <div className="form-row">
+            <div className="form-group col-md-12">
+              <Input id="username" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
+              <span style={{ color: "red" }}>{this.state.errors["username"]}</span>
+
+            </div>
+          </div>
+
+          {(!this.state.edit) &&
+
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <Input id="password" text="Password" onChange={this.onChangePassword} type="password" disabled={this.state.disabled} />
+                <span style={{ color: "red" }}>{this.state.errors["password"]}</span>
+              </div>
+              <div className="form-group col-md-6">
+                <Input id="confirm_password" text="Confirm Password" onChange={this.onChangeConfirmPassword} type="password" disabled={this.state.disabled} />
+                <span style={{ color: "red" }}>{this.state.errors["confirm_password"]}</span>
+              </div>
+            </div>
+          }
+
+          {(this.state.edit) &&
+            <div className="form-row">
+              <div className="form-group col-md-4">
+                <Input id="password" text="Old Password" onChange={this.onChangePassword} type="password" disabled={this.state.disabled} />
+                <span style={{ color: "red" }}>{this.state.errors["password"]}</span>
+              </div>
+              <div className="form-group col-md-4">
+                <Input id="confirm_password" text="New Password" onChange={this.onChangeConfirmPassword} type="password" disabled={this.state.disabled} />
+                <span style={{ color: "red" }}>{this.state.errors["confirm_password"]}</span>
+              </div>
+              <div className="form-group col-md-4">
+                <Input id="updated_password" text="Confirm Password" onChange={this.onChangeUpdatedPassword} type="password" disabled={this.state.disabled} />
+                <span style={{ color: "red" }}>{this.state.errors["updated_password"]}</span>
+                {this.state.disabled && <small className="form-text text-muted"> <a onClick={this.editPassword}> Change password</a> </small>}
+                {!this.state.disabled && <small className="form-text text-muted"> <a onClick={this.changePassword}> Save</a> </small>}
+              </div>
+            </div>
+          }
+
+          <Button signup={this.signup} text="Send" clazz="btn btn-primary" />
         </form>
       </div>
     );

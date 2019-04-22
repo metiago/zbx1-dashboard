@@ -34,9 +34,7 @@ axios.interceptors.response.use(function (response) {
   return response;
 
 }, function (error) {
-
-  console.log(error)
-
+  
   handleHttpResponse(error.response)
 
   return Promise.reject(error);
@@ -71,10 +69,8 @@ export function handleHttpResponse(response) {
     case 204:
       return
     default:
-      clazz = 'alert alert-danger'
-      status = response.status
-      message = response.statusText
-      break;
+      console.log(response)
+      return
   }
 
   ReactDOM.render(<Alert clazz={clazz} status={status} message={message} />, document.getElementById('alert'));

@@ -114,7 +114,7 @@ class Dashboard extends Component {
         axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
           
           that.setState({ showProgressBar: false })
-          validationSuccess('File has been successfully updated.')
+          validationSuccess('File has been successfully uploaded.')
           that.findAllFiles()
 
         }).catch(function (error) {
