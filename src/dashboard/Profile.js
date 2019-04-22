@@ -10,6 +10,7 @@ import { getUserInfo } from '../utils/AuthService'
 
 import Button from '../components/button/Button';
 
+// TODO Implment form to change my password
 const AUTH_SIGNUP = 'http://localhost:5000/signup'
 const USERS_URL = 'http://localhost:5000/api/v1/users'
 
