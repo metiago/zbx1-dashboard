@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router';
 
-import Loader from 'react-loader-spinner'
-
 import { login } from '../../utils/AuthService';
 import Profile from '../../dashboard/Profile';
+import Input from '../../components/input/Input'
 import { validationError } from '../../utils/Request';
 import Nav from '../nav/Nav';
 
@@ -14,9 +13,9 @@ class Login extends Component {
     super(props);
 
     this.state = {
-      loader: false,
-      username: null,
-      password: null
+      username: '',
+      password: '',
+      errors: []
     };
 
     this.onChangeUsername = this.onChangeUsername.bind(this);
@@ -32,22 +31,44 @@ class Login extends Component {
     this.setState({ password: event.target.value });
   }
 
-  login() {
+  validateForm() {
 
-    const that = this
+    let errors = [];
 
-    that.setState({ loader: true })
+    if (this.state.username === '') {
+      errors['username'] = 'Username must be not empty'
+    }
 
-    login(this.state.username, this.state.password).then(function (ok) {
+    if (this.state.password === '') {
+      errors['password'] = 'Password must be not empty'
+    }
 
-      if (ok) {
-        browserHistory.push('/dashboard');
-      }
-      else {
-        that.setState({ loader: false })
-        validationError('Username/Password invalids.')
-      }
-    });
+    this.setState({ errors: errors })
+
+    return Object.keys(errors).length === 0;
+  }
+
+  login(e) {
+
+    e.preventDefault();
+
+    if (this.validateForm()) {
+
+      login(this.state.username, this.state.password).then(function (ok) {
+
+        if (ok) {
+          browserHistory.push('/dashboard');
+        }
+        else {
+          
+          validationError('Username/Password invalids.')
+        }
+      }).catch(function (error) {
+        //handleHttpResponse(error)
+        console.log(error)
+      });
+
+    }
   }
 
   render() {
@@ -76,19 +97,15 @@ class Login extends Component {
               <form className="form-signin">
 
                 <div className="form-group">
-                  <label htmlFor="inputEmail" className="sr-only">Email address</label>
-                  <input onChange={this.onChangeUsername} type="text" id="inputEmail" className="form-control" placeholder="Username" required autoFocus />
+                  <Input id="lusername" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
+                  <span style={{ color: "red" }}>{this.state.errors["username"]}</span>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="inputPassword" className="sr-only">Password</label>
-                  <input onChange={this.onChangePassword} type="password" id="inputPassword" className="form-control" placeholder="Password" required />
+                  <Input id="lpassword" text="Password" onChange={this.onChangePassword} type="password" value={this.state.password} />
+                  <span style={{ color: "red" }}>{this.state.errors["password"]}</span>
                 </div>
-
-                <div className="form-group">
-                  {this.state.loader && <Loader type="ThreeDots" color="#000" height="30" width="30" />}
-                </div>
-
+               
                 <button onClick={this.login} className="btn btn-lg btn-primary btn-block" type="button">Sign in</button>
 
               </form>

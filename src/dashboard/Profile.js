@@ -5,7 +5,7 @@ import axios from 'axios';
 import Nav from '../components/nav/Nav'
 import Input from '../components/input/Input'
 
-import { handleHttpResponse, validationSuccess, validationError } from '../utils/Request'
+import { handleHttpResponse, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
 
 import Button from '../components/button/Button';
@@ -165,13 +165,13 @@ class Profile extends Component {
     e.preventDefault();
 
     if (this.validateForm()) {
-      
+
       if (this.state.ID) {
 
         const form = {
           name: this.state.name,
           email: this.state.email,
-          username: this.state.username,     
+          username: this.state.username,
         }
 
         axios.put(`${USERS_URL}/${this.state.ID}`, form).then(function (response) {
@@ -191,17 +191,15 @@ class Profile extends Component {
           email: this.state.email,
           username: this.state.username,
           password: this.state.password,
-          confirm_password: this.state.confirm_password        
+          confirm_password: this.state.confirm_password
         }
 
         axios.post(AUTH_SIGNUP, form).then(function (response) {
-
+          
           validationSuccess('Thanks! Your account has been successfully created.')
 
         }).catch(function (error) {
-          validationError(error.response)
           console.log(error)
-          console.log(error.response)
         });
       }
     }
@@ -226,7 +224,7 @@ class Profile extends Component {
         }
       ).then(function (response) {
 
-        that.setState({disabled: true, password: '', confirm_password: '', updated_password: ''})
+        that.setState({ disabled: true, password: '', confirm_password: '', updated_password: '' })
         validationSuccess('Ok! Your password has been successfully updated.')
 
       }).catch(function (error) {
@@ -281,15 +279,15 @@ class Profile extends Component {
           {(this.state.edit) &&
             <div className="form-row">
               <div className="form-group col-md-4">
-                <Input id="password" text="Old Password" onChange={this.onChangePassword} type="password" disabled={this.state.disabled} />
+                <Input id="password" text="Old Password" onChange={this.onChangePassword} type="password" disabled={this.state.disabled} value={this.state.password}/>
                 <span style={{ color: "red" }}>{this.state.errors["password"]}</span>
               </div>
               <div className="form-group col-md-4">
-                <Input id="confirm_password" text="New Password" onChange={this.onChangeConfirmPassword} type="password" disabled={this.state.disabled} />
+                <Input id="confirm_password" text="New Password" onChange={this.onChangeConfirmPassword} type="password" disabled={this.state.disabled} value={this.state.confirm_password}/>
                 <span style={{ color: "red" }}>{this.state.errors["confirm_password"]}</span>
               </div>
               <div className="form-group col-md-4">
-                <Input id="updated_password" text="Confirm Password" onChange={this.onChangeUpdatedPassword} type="password" disabled={this.state.disabled} />
+                <Input id="updated_password" text="Confirm Password" onChange={this.onChangeUpdatedPassword} type="password" disabled={this.state.disabled} value={this.state.updated_password}/>
                 <span style={{ color: "red" }}>{this.state.errors["updated_password"]}</span>
                 {this.state.disabled && <small className="form-text text-muted"> <a onClick={this.editPassword}> Change password</a> </small>}
                 {!this.state.disabled && <small className="form-text text-muted"> <a onClick={this.changePassword}> Save</a> </small>}

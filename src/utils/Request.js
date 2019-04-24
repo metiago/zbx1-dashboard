@@ -34,7 +34,9 @@ axios.interceptors.response.use(function (response) {
   return response;
 
 }, function (error) {
-  
+
+  ReactDOM.render(<div></div>, document.getElementById('loader'))
+
   handleHttpResponse(error.response)
 
   return Promise.reject(error);
@@ -43,9 +45,11 @@ axios.interceptors.response.use(function (response) {
 
 export function handleHttpResponse(response) {
 
+  // console.log(response)
+
   let clazz = null;
   let status = null;
-  let message = null;
+  let messages = null;
 
   switch (response.status) {
     case 200:
@@ -54,17 +58,46 @@ export function handleHttpResponse(response) {
     case 403:
       clazz = 'alert alert-warning'
       status = response.status
-      message = response.statusText
+      messages = response.statusText
       break;
     case 400:
       clazz = 'alert alert-warning'
       status = response.status
-      message = response.data.message
+
+      if (response.data.validationError) {
+
+        let errs = response.data.validationError
+
+        let msgs = []
+
+        if ('name' in errs) {
+          errs.name.forEach(element => {
+            msgs.push(element)
+          });
+        }
+
+        if ('email' in errs) {
+          errs.email.forEach(element => {
+            msgs.push(element)
+          });
+        }
+
+        if ('username' in errs) {
+          errs.username.forEach(element => {
+            msgs.push(element)
+          });
+        }
+
+        messages = msgs
+      } else {
+        messages = response.data.message
+      }
+      
       break;
     case 500:
       clazz = 'alert alert-danger'
       status = response.status
-      message = response.statusText
+      messages = response.statusText
       break;
     case 204:
       return
@@ -73,7 +106,7 @@ export function handleHttpResponse(response) {
       return
   }
 
-  ReactDOM.render(<Alert clazz={clazz} status={status} message={message} />, document.getElementById('alert'));
+  ReactDOM.render(<Alert clazz={clazz} status={status} messages={messages} />, document.getElementById('alert'));
 }
 
 export function validationError(message) {
