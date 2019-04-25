@@ -1,18 +1,16 @@
-## zbx1
+## ZBX1
 
-Dashboard to manage a file system
+Dashboard to manage a file managemnt
 
-## Installation
+## Set up
 
 ```bash
 
 # Get the project
 git clone https://github.com/metiago/zbx1-dashboard
 
-
 # Change directory
 cd zbx1-dashboard
-
 
 # Install the dependencies
 npm install
