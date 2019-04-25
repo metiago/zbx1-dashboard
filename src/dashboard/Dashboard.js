@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 
+import { FILES_URL } from "../utils/Request";
 import ProgressBar from '../components/progress/ProgressBar'
 import Nav from '../components/nav/Nav';
 import Dropzone from '../components/dropzone/Dropzone';
 import FileDetail from '../components/modal/FileDetail'
-
 import { validationError, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
-
-const FILES_URL = 'http://localhost:5000/api/v1/files'
 
 const MAX_FILE_SIZE_IN_BYTES = 16000000
 
@@ -111,7 +109,7 @@ class Dashboard extends Component {
         let formdata = new FormData();
         formdata.append('file', file, file.name);
 
-        axios.post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+        axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
           
           that.setState({ showProgressBar: false })
           validationSuccess('File has been successfully uploaded.')
@@ -137,7 +135,7 @@ class Dashboard extends Component {
     //     start = end;
     //     end = start + BYTES_PER_CHUNK;
 
-    //     post('http://localhost:5000/api/v1/files/upload', formdata, config).then(function (response) {
+    //     post('', formdata, config).then(function (response) {
 
     //         
 

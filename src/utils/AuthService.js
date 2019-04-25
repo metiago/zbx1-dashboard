@@ -1,17 +1,16 @@
-
 import axios from 'axios';
 import decode from 'jwt-decode';
 import { browserHistory } from 'react-router';
 
+import { AUTH_URL } from "./Request";
 
-const URL = 'http://localhost:5000/auth/login'
 const TOKEN_KEY = 'access_token';
 
 export async function login(username, password) {
 
   try {
 
-    const res = await axios.post(URL, { username: username, password: password });
+    const res = await axios.post(AUTH_URL, { username: username, password: password });
     localStorage.setItem(TOKEN_KEY, res.data.token);
   }
   catch (error) {

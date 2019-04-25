@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 
+import { SIGNUP_URL, USERS_URL } from "../utils/Request";
 import Nav from '../components/nav/Nav'
 import Input from '../components/input/Input'
-
 import { handleHttpResponse, validationSuccess } from '../utils/Request'
 import { getUserInfo } from '../utils/AuthService'
-
 import Button from '../components/button/Button';
-
-const AUTH_SIGNUP = 'http://localhost:5000/signup'
-const USERS_URL = 'http://localhost:5000/api/v1/users'
 
 class Profile extends Component {
 
@@ -194,7 +190,7 @@ class Profile extends Component {
           confirm_password: this.state.confirm_password
         }
 
-        axios.post(AUTH_SIGNUP, form).then(function (response) {
+        axios.post(SIGNUP_URL, form).then(function (response) {
           
           validationSuccess('Thanks! Your account has been successfully created.')
 

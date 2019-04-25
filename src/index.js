@@ -1,8 +1,8 @@
+// import {} from 'dotenv/config'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import { Router, Route, browserHistory } from 'react-router';
-
 import Dashboard from './dashboard/Dashboard';
 import Profile from './dashboard/Profile';
 import Callback from './dashboard/Callback';
@@ -10,7 +10,6 @@ import Callback from './dashboard/Callback';
 import { requireAuth } from './utils/AuthService';
 
 import App from './App'
-
 
 const Root = () => {
   return (
