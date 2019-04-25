@@ -8,7 +8,7 @@ import { getToken } from './AuthService'
 import Alert from '../components/alert/Alert'
 
 // TODO Change it for env files
-const BASE_URL = 'https://zbx1.herokuapp.com/'
+const BASE_URL = 'https://zbx1.herokuapp.com'
 export const AUTH_URL = `${BASE_URL}/auth/login`
 export const SIGNUP_URL = `${BASE_URL}/signup`
 export const USERS_URL = `${BASE_URL}/api/v1/users`
