@@ -39,6 +39,7 @@ class Nav extends Component {
                 }
                 <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <a className="dropdown-item" href="/profile">Profile</a>
+                  <a className="dropdown-item" href="/password">Password</a>
                   <hr />
                   {
                     (isLoggedIn()) ? (<a className="dropdown-item" onClick={() => logout()}>Log out </a>) : (<a className="dropdown-item" onClick={() => login()}>Log In</a>)

@@ -49,11 +49,7 @@ class Dashboard extends Component {
     that.setState({ username: userInfo.Username }, function () {
 
       axios.get(`${FILES_URL}/query?username=${this.state.username}&page=1`).then(function (res) {
-
-        if (res.data.length > 0) {
-          that.setState({ files: res.data, page: 1 })
-        }
-
+        that.setState({ files: res.data, page: 1 })
       }).catch(function (error) {
         console.log(error)
       });
@@ -226,10 +222,6 @@ class Dashboard extends Component {
               </div>
             ))
             }
-
-            <small className="d-block text-right mt-3">
-              <a>Show All</a>
-            </small>
           </div>
 
         </main>
