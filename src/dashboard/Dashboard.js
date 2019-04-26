@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 
+
 import { FILES_URL } from "../utils/Request";
 import ProgressBar from '../components/progress/ProgressBar'
 import Nav from '../components/nav/Nav';
@@ -18,32 +19,70 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       files: [],
+      page: 1,
       modal: false,
       fileID: '',
       modalTitle: '',
       fileOwner: '',
-      fileCreated: ''
+      fileCreated: '',
+      username: ''
     };
 
     this.detail = this.detail.bind(this)
     this.delete = this.delete.bind(this)
     this.upload = this.upload.bind(this)
-  }
 
-  findAllFiles() {
-    const userInfo = getUserInfo()
-    const that = this;
-    const res = axios.get(`${FILES_URL}/${userInfo.Username}`);
-    res.then(function (res) {
-      that.setState({ files: res.data.slice(0, 50) });
-    }).catch(function (error) {
-      console.log(error)
-      console.log(error.response)
-    });
-  }  
+    window.onscroll = () => {
+      this.loadMore()
+    }
+  }
 
   componentDidMount() {
     this.findAllFiles();
+  }
+
+  findAllFiles() {
+
+    const that = this;
+    const userInfo = getUserInfo()
+
+    that.setState({ username: userInfo.Username }, function () {
+
+      axios.get(`${FILES_URL}/query?username=${this.state.username}&page=1`).then(function (res) {
+
+        if (res.data.length > 0) {
+          that.setState({ files: res.data, page: 1 })
+        }
+
+      }).catch(function (error) {
+        console.log(error)
+      });
+
+    })
+  }
+
+  loadMore() {
+    const that = this
+    let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    let scrolled = (winScroll / height) * 100;
+    
+    if (scrolled === 100) {
+    
+      axios.get(`${FILES_URL}/query?username=${this.state.username}&page=${this.state.page + 1}`).then(function (res) {
+
+        if (res.data.length > 0) {
+
+          let page = that.state.page + 1
+          let files = that.state.files.concat(res.data)
+
+          that.setState({ files: files, page: page })
+        }
+
+      }).catch(function (error) {
+        console.log(error)
+      });
+    }
   }
 
   detail(data) {
@@ -101,7 +140,7 @@ class Dashboard extends Component {
     for (let file of files) {
 
       if (file.size > MAX_FILE_SIZE_IN_BYTES) {
-        
+
         validationError('Maximum file size 16MB')
 
       } else if (file.type) {
@@ -110,7 +149,7 @@ class Dashboard extends Component {
         formdata.append('file', file, file.name);
 
         axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
-          
+
           that.setState({ showProgressBar: false })
           validationSuccess('File has been successfully uploaded.')
           that.findAllFiles()

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router';
 
-import { login, logout } from '../../utils/AuthService';
+import { login } from '../../utils/AuthService';
 import Profile from '../../dashboard/Profile';
 import Input from '../../components/input/Input'
 import { validationError } from '../../utils/Request';
@@ -29,10 +29,6 @@ class Login extends Component {
 
   onChangePassword(event) {
     this.setState({ password: event.target.value });
-  }
-
-  componentDidMount() {
-    logout()
   }
 
   validateForm() {

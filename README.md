@@ -16,4 +16,5 @@ cd zbx1-dashboard
 npm install
 
 # Run your app
-npm start
+npm run dev 
+

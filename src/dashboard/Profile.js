@@ -6,7 +6,7 @@ import { SIGNUP_URL, USERS_URL } from "../utils/Request";
 import Nav from '../components/nav/Nav'
 import Input from '../components/input/Input'
 import { handleHttpResponse, validationSuccess } from '../utils/Request'
-import { getUserInfo } from '../utils/AuthService'
+import { logout, getUserInfo } from '../utils/AuthService'
 import Button from '../components/button/Button';
 
 class Profile extends Component {
@@ -42,6 +42,7 @@ class Profile extends Component {
   }
 
   componentDidMount() {
+    logout()
     this.findAllUsers();
   }
 
@@ -75,8 +76,8 @@ class Profile extends Component {
     const that = this;
 
     const userInfo = getUserInfo()
-
-    if (userInfo) {
+    
+    if (userInfo !== null) {
 
       this.setState({ disabled: true })
 
