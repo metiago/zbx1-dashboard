@@ -8,7 +8,8 @@ import { getToken } from './AuthService'
 import Alert from '../components/alert/Alert'
 
 // TODO Change it for env files
-const BASE_URL = 'https://zbx1.herokuapp.com'
+//const BASE_URL = 'https://zbx1.herokuapp.com'
+const BASE_URL = 'http://localhost:5000'
 export const AUTH_URL = `${BASE_URL}/auth/login`
 export const SIGNUP_URL = `${BASE_URL}/signup`
 export const USERS_URL = `${BASE_URL}/api/v1/users`
@@ -63,6 +64,7 @@ export function handleHttpResponse(response) {
     case 201:
       return
     case 403:
+    case 401:
       clazz = 'alert alert-warning'
       status = response.status
       messages = response.statusText

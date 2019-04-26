@@ -42,7 +42,6 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    logout()
     this.findAllUsers();
   }
 
