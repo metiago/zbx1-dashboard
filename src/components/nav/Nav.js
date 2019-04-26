@@ -30,12 +30,12 @@ class Nav extends Component {
             <ul className="navbar-nav">
               <li className="nav-item active">
                 {
-                  (isLoggedIn()) ? (<a className="nav-link" href='/dashboard'> Dashboard </a>) : ''
+                  (isLoggedIn()) ? (<a className="nav-link" href='/dashboard'> <i className="fab fa-buromobelexperte"></i> Dashboard </a>) : ''
                 }
               </li>
               <li className="nav-item dropdown active">
                 {
-                  (isLoggedIn()) ? (<a className="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Settings </a>) : ''
+                  (isLoggedIn()) ? (<a className="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i className="fas fa-cog"></i> Settings </a>) : ''
                 }
                 <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <a className="dropdown-item" href="/profile">Profile</a>

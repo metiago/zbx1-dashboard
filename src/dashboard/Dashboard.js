@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import axios from 'axios';
 
-
 import { FILES_URL } from "../utils/Request";
 import ProgressBar from '../components/progress/ProgressBar'
 import Nav from '../components/nav/Nav';
@@ -62,9 +61,9 @@ class Dashboard extends Component {
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     let scrolled = (winScroll / height) * 100;
-    
+
     if (scrolled === 100) {
-    
+
       axios.get(`${FILES_URL}/query?username=${this.state.username}&page=${this.state.page + 1}`).then(function (res) {
 
         if (res.data.length > 0) {
@@ -201,30 +200,41 @@ class Dashboard extends Component {
 
         }
 
-        <main>
+        { files.length > 0 ?
+          <main>
 
-          <div id="loader" />
+            <div id="loader" />
+
+            <div className="my-3 p-3 bg-white rounded shadow-sm">
+
+              <h6 className="border-bottom border-gray pb-2 mb-0">My Files</h6>
+
+              {files.map((data, index) => (
+                <div className="media text-muted pt-3" key={index}>
+                  <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff" /><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+                  <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                    <div className="d-flex justify-content-between align-items-center w-100">
+                      <strong className="text-gray-dark">{data.name}</strong>
+                      <a onClick={() => this.detail(data)}>Details</a>
+                    </div>
+                    <span className="d-block">@{data.username}</span>
+                  </div>
+                </div>
+              ))
+              }
+
+            </div>
+
+          </main>
+
+          : 
 
           <div className="my-3 p-3 bg-white rounded shadow-sm">
+            
+            <i className="fas fa-archive"></i> There are no files or folders in this view
 
-            <h6 className="border-bottom border-gray pb-2 mb-0">My Files</h6>
-
-            {files.map((data, index) => (
-              <div className="media text-muted pt-3" key={index}>
-                <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff" /><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
-                <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                  <div className="d-flex justify-content-between align-items-center w-100">
-                    <strong className="text-gray-dark">{data.name}</strong>
-                    <a onClick={() => this.detail(data)}>Details</a>
-                  </div>
-                  <span className="d-block">@{data.username}</span>
-                </div>
-              </div>
-            ))
-            }
           </div>
-
-        </main>
+        }
 
       </div>
     );
