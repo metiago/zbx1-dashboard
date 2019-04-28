@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
 import axios from 'axios';
 
@@ -105,14 +106,62 @@ class Dashboard extends Component {
         validationSuccess('File has been deleted')
       }).catch(function (error) {
         console.log(error)
-        that.setState({ showProgressBar: false })
       });
     }
   }
 
-  upload(files) {
+  showProgressBar(source, uploadPercentage) {
+    ReactDOM.render(<ProgressBar source={source} style={{ width: `${uploadPercentage}%` }} value={uploadPercentage} files={this.state.filesInProgress} />, document.getElementById("progress"))
+  }
+
+  hideProgressBar() {
+    ReactDOM.render('', document.getElementById("progress"))
+  }
+
+  send(file) {
 
     let that = this;
+    let CancelToken = axios.CancelToken;
+    let source = CancelToken.source();
+    let config = {
+
+      headers: {
+        'Content-Type': `multipart/form-data`,
+      },
+      cancelToken: source.token,
+      onUploadProgress: function (progressEvent) {
+
+        const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
+        
+        that.showProgressBar(source, uploadPercentage)        
+
+        if (uploadPercentage === 100) {
+          that.setState({
+            filesInProgress: []
+          });
+          that.hideProgressBar()
+        }
+      }
+    }
+
+    let formdata = new FormData();
+    formdata.append('file', file, file.name);   
+    
+    axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
+
+      validationSuccess('File has been successfully uploaded.')
+      that.findAllFiles()
+
+    }).catch(function (error) {
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message);
+      }
+      console.log(error)
+      that.hideProgressBar()
+    });
+  }
+
+  upload(files) {
 
     // TODO: Implement chunking upload as well as a cancel function        
     // let blob = files[0]
@@ -122,20 +171,6 @@ class Dashboard extends Component {
     // let start = 0;
     // let end = BYTES_PER_CHUNK;
 
-    const config = {
-
-      headers: {
-        'Content-Type': `multipart/form-data`,
-      },
-
-      onUploadProgress: function (progressEvent) {
-
-        const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
-        that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
-
-      }
-    }
-
     for (let file of files) {
 
       if (file.size > MAX_FILE_SIZE_IN_BYTES) {
@@ -144,21 +179,9 @@ class Dashboard extends Component {
 
       } else if (file.type) {
 
-        that.state.filesInProgress.push(file)
+        this.state.filesInProgress.push(file)
 
-        let formdata = new FormData();
-        formdata.append('file', file, file.name);
-
-        axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
-
-          that.setState({ showProgressBar: false })
-          validationSuccess('File has been successfully uploaded.')
-          that.findAllFiles()
-
-        }).catch(function (error) {
-
-          that.setState({ showProgressBar: false })
-        });
+        this.send(file)
 
       } else {
 
@@ -200,12 +223,8 @@ class Dashboard extends Component {
 
         <Dropzone upload={this.upload} />
 
-        {
-
-          this.state.showProgressBar && <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} files={this.state.filesInProgress} />
-
-        }
-
+        <div id="progress"></div>
+       
         {files.length > 0 ?
           <main>
 

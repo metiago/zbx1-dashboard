@@ -3,6 +3,16 @@ import React, { Component } from 'react';
 
 class ProgressBar extends Component {
 
+  constructor(props) {
+    super(props)
+
+    this.cancel = this.cancel.bind(this)
+  }
+
+  cancel() {
+    this.props.source.cancel('Operation canceled by the user.');
+  }
+
   progressBar = () => {
 
     let arr = []
@@ -13,6 +23,7 @@ class ProgressBar extends Component {
         <div key={i}>
           <div className="progress" />
           <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style={this.props.style} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{this.props.value}%</div>
+          <small> <a onClick={this.cancel}> Cancel</a> </small>
         </div>
       )
     }
