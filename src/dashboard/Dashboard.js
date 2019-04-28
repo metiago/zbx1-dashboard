@@ -32,6 +32,7 @@ class Dashboard extends Component {
     this.detail = this.detail.bind(this)
     this.delete = this.delete.bind(this)
     this.upload = this.upload.bind(this)
+    this.download = this.download.bind(this)
 
     window.onscroll = () => {
       this.loadMore()
@@ -83,13 +84,13 @@ class Dashboard extends Component {
     }
   }
 
-  detail(data) {
+  detail(file) {
     this.setState(prevState => ({
       modal: !prevState.modal,
-      fileID: data.id,
-      modalTitle: data.name,
-      fileOwner: data.username,
-      fileCreated: data.created
+      fileID: file.id,
+      modalTitle: file.name,
+      fileOwner: file.username,
+      fileCreated: file.created
     }));
   }
 
@@ -132,8 +133,8 @@ class Dashboard extends Component {
       onUploadProgress: function (progressEvent) {
 
         const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
-        
-        that.showProgressBar(source, uploadPercentage)        
+
+        that.showProgressBar(source, uploadPercentage)
 
         if (uploadPercentage === 100) {
           that.setState({
@@ -145,8 +146,8 @@ class Dashboard extends Component {
     }
 
     let formdata = new FormData();
-    formdata.append('file', file, file.name);   
-    
+    formdata.append('file', file, file.name);
+
     axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
 
       validationSuccess('File has been successfully uploaded.')
@@ -209,6 +210,23 @@ class Dashboard extends Component {
     // }
   }
 
+  download(file) {
+
+    axios.get(`${FILES_URL}/download/${file.id}`).then(function (response) {
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', file.name);
+      document.body.appendChild(link);
+      link.click();
+
+    }).catch(function (error) {
+      console.log(error)
+    });
+
+  }
+
   render() {
 
     const { files } = this.state;
@@ -224,23 +242,22 @@ class Dashboard extends Component {
         <Dropzone upload={this.upload} />
 
         <div id="progress"></div>
-       
+
         {files.length > 0 ?
+
           <main>
 
             <div id="loader" />
 
             <div className="my-3 p-3 bg-white rounded shadow-sm">
-
               <h6 className="border-bottom border-gray pb-2 mb-0">My Files</h6>
-
               {files.map((data, index) => (
                 <div className="media text-muted pt-3" key={index}>
                   <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff" /><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
                   <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div className="d-flex justify-content-between align-items-center w-100">
                       <a onClick={() => this.detail(data)}><strong className="zb-file-name ">{data.name}</strong></a>
-                      <a onClick={() => this.detail(data)}>Download</a>
+                      <a onClick={() => this.download(data)}>Download</a>
                     </div>
                     <span className="d-block">@{data.username}</span>
                   </div>
