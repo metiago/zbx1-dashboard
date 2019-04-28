@@ -18,6 +18,7 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       files: [],
+      filesInProgress: [],
       page: 1,
       modal: false,
       fileID: '',
@@ -57,6 +58,7 @@ class Dashboard extends Component {
   }
 
   loadMore() {
+
     const that = this
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -127,8 +129,10 @@ class Dashboard extends Component {
       },
 
       onUploadProgress: function (progressEvent) {
+
         const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
         that.setState({ progressBarStyle: { width: `${uploadPercentage}%` }, progressBarValue: uploadPercentage, showProgressBar: true });
+
       }
     }
 
@@ -139,6 +143,8 @@ class Dashboard extends Component {
         validationError('Maximum file size 16MB')
 
       } else if (file.type) {
+
+        that.state.filesInProgress.push(file)
 
         let formdata = new FormData();
         formdata.append('file', file, file.name);
@@ -196,11 +202,11 @@ class Dashboard extends Component {
 
         {
 
-          (this.state.showProgressBar) ? <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} /> : ''
+          this.state.showProgressBar && <ProgressBar style={this.state.progressBarStyle} value={this.state.progressBarValue} files={this.state.filesInProgress} />
 
         }
 
-        { files.length > 0 ?
+        {files.length > 0 ?
           <main>
 
             <div id="loader" />
@@ -214,8 +220,8 @@ class Dashboard extends Component {
                   <svg className="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff" /><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
                   <div className="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div className="d-flex justify-content-between align-items-center w-100">
-                      <strong className="text-gray-dark">{data.name}</strong>
-                      <a onClick={() => this.detail(data)}>Details</a>
+                      <a onClick={() => this.detail(data)}><strong className="zb-file-name ">{data.name}</strong></a>
+                      <a onClick={() => this.detail(data)}>Download</a>
                     </div>
                     <span className="d-block">@{data.username}</span>
                   </div>
@@ -227,10 +233,10 @@ class Dashboard extends Component {
 
           </main>
 
-          : 
+          :
 
           <div className="my-3 p-3 bg-white rounded shadow-sm">
-            
+
             <i className="fas fa-archive"></i> There are no files or folders in this view
 
           </div>

@@ -68,3 +68,11 @@ a {
 .primary-color {
   background-color: #4caf50!important;
 }
+
+.zb-file-name {
+  color: #007bff;
+}
+
+.zb-file-name:hover{
+  color: #33B5FF;
+}
