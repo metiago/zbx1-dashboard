@@ -212,14 +212,24 @@ class Dashboard extends Component {
 
   download(file) {
 
-    axios.get(`${FILES_URL}/download/${file.id}`).then(function (response) {
+    const config = {
+      responseType: 'blob',
+    }
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', file.name);
-      document.body.appendChild(link);
-      link.click();
+    axios.get(`${FILES_URL}/download/${file.id}`, config).then(function (response) {
+
+      var a = document.createElement('a');
+      a.style = "display: none";
+      var blob = new Blob([response.data], { type: "application/octet-stream" });
+      var url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
     }).catch(function (error) {
       console.log(error)
