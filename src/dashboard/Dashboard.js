@@ -65,8 +65,8 @@ class Dashboard extends Component {
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     let scrolled = (winScroll / height) * 100;
-
-    if (scrolled === 100) {
+    
+    if (scrolled > 98) {
 
       axios.get(`${FILES_URL}/query?username=${this.state.username}&page=${this.state.page + 1}`).then(function (res) {
 
