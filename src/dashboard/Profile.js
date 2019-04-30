@@ -103,6 +103,14 @@ class Profile extends Component {
       }
     }
 
+    if (this.state.password === '') {
+      errors['password'] = 'Old password must be not empty'
+    }
+
+    if (this.state.confirm_password === '') {
+      errors['confirm_password'] = 'New password must be not empty'
+    }
+
     this.setState({ errors: errors })
 
     return Object.keys(errors).length === 0;
