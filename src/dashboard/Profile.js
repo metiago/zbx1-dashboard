@@ -110,6 +110,10 @@ class Profile extends Component {
     if (this.state.confirm_password === '') {
       errors['confirm_password'] = 'New password must be not empty'
     }
+    
+    if (this.state.password !== this.state.confirm_password) {
+      errors['confirm_password'] = 'Confirm password not match'
+    }
 
     this.setState({ errors: errors })
 
@@ -170,6 +174,7 @@ class Profile extends Component {
         <Nav />
 
         <form>
+
           <div className="form-group">
             <Input id="name" text="Name" onChange={this.onChangeName} type="text" value={this.state.name} />
             <span style={{ color: "red" }}>{this.state.errors["name"]}</span>
@@ -183,7 +188,6 @@ class Profile extends Component {
             <div className="form-group col-md-12">
               <Input id="username" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
               <span style={{ color: "red" }}>{this.state.errors["username"]}</span>
-
             </div>
           </div>
 
