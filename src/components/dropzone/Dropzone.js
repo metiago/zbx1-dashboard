@@ -75,8 +75,7 @@ class Dropzone extends Component {
         //     }
         // }
     }
-    
-    // TODO Change it to reactive component
+
     render() {
 
         return (

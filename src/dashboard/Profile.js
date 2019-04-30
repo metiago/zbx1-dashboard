@@ -120,6 +120,7 @@ class Profile extends Component {
     return Object.keys(errors).length === 0;
   }  
 
+  // FIXME Does not work in mobile 
   signup(e) {
 
     e.preventDefault();
