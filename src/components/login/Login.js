@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { browserHistory } from 'react-router';
 
 import { login } from '../../utils/AuthService';
-import Profile from '../../dashboard/Profile';
+import SignUp from '../../dashboard/SignUp';
 import Input from '../../components/input/Input'
 import { validationError } from '../../utils/Request';
 import Nav from '../nav/Nav';
@@ -120,7 +120,7 @@ class Login extends Component {
 
               <div className="card-body">
 
-                <Profile />
+                <SignUp />
 
               </div>
             </div>
