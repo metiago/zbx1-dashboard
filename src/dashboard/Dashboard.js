@@ -32,14 +32,13 @@ class Dashboard extends Component {
     this.detail = this.detail.bind(this)
     this.delete = this.delete.bind(this)
     this.upload = this.upload.bind(this)
-    this.download = this.download.bind(this)
-
-    window.onscroll = () => {
-      this.loadMore()
-    }
+    this.download = this.download.bind(this)    
   }
 
   componentDidMount() {
+    window.onscroll = () => {
+      this.loadMore()
+    }
     this.findAllFiles();
   }
 
