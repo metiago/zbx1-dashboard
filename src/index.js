@@ -3,10 +3,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 import { Router, Route, browserHistory } from 'react-router';
-import Dashboard from './dashboard/Dashboard';
-import Profile from './dashboard/Profile';
-import Password from './dashboard/Password'
-import Callback from './dashboard/Callback';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Password from './pages/Password'
+import Callback from './pages/Callback';
 
 import { requireAuth } from './utils/AuthService';
 

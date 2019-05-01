@@ -98,7 +98,7 @@ class SignUp extends Component {
         if (this.validateForm()) {
 
             const that = this;
-
+            
             const form = {
                 name: this.state.name,
                 email: this.state.email,

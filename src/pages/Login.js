@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router';
 
-import { login } from '../../utils/AuthService';
-import SignUp from '../../dashboard/SignUp';
-import Input from '../../components/input/Input'
-import { validationError } from '../../utils/Request';
-import Nav from '../nav/Nav';
+import { login } from '../utils/AuthService';
+import SignUp from './SignUp';
+import Input from '../components/input/Input'
+import { validationError } from '../utils/Request';
+import Nav from '../components/nav/Nav';
 
 class Login extends Component {
 
@@ -21,6 +21,11 @@ class Login extends Component {
     this.onChangeUsername = this.onChangeUsername.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.login = this.login.bind(this);
+  }
+
+  componentDidMount() {
+    // Unset window variable If already set in dashboard scroll function
+    window.onscroll = () => {}
   }
 
   onChangeUsername(event) {

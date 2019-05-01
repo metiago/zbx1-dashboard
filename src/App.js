@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Login from "./components/login/Login";
+import Login from "./pages/Login";
 
 import './App.css';
 
