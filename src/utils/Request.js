@@ -9,6 +9,7 @@ import Alert from '../components/alert/Alert'
 
 const BASE_URL = 'https://zbx1.herokuapp.com'
 // const BASE_URL = 'http://localhost:5000'
+
 export const AUTH_URL = `${BASE_URL}/auth/login`
 export const SIGNUP_URL = `${BASE_URL}/signup`
 export const USERS_URL = `${BASE_URL}/api/v1/users`
@@ -128,4 +129,7 @@ export function validationError(message) {
 export function validationSuccess(message) {
   const elem = <div className="alert alert-success" role="alert"> {message} </div>;
   ReactDOM.render(elem, document.getElementById('alert'));
+  setTimeout(function() {
+    ReactDOM.unmountComponentAtNode(document.getElementById('alert'));  
+  }, 5000)
 }
