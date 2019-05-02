@@ -35,7 +35,7 @@ axios.interceptors.request.use(async (config) => {
 
 axios.interceptors.response.use(function (response) {
 
-  // ReactDOM.render(<div></div>, document.getElementById('loader'))
+  ReactDOM.render(<div></div>, document.getElementById('loader'))
 
   handleHttpResponse(response)
 
@@ -45,7 +45,7 @@ axios.interceptors.response.use(function (response) {
 
   console.log(error)
 
-  // ReactDOM.render(<div></div>, document.getElementById('loader'))
+  ReactDOM.render(<div></div>, document.getElementById('loader'))
   
   handleHttpResponse(error.response)
   
