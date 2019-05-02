@@ -35,7 +35,7 @@ axios.interceptors.request.use(async (config) => {
 
 axios.interceptors.response.use(function (response) {
 
-  ReactDOM.render(<div></div>, document.getElementById('loader'))
+  // ReactDOM.render(<div></div>, document.getElementById('loader'))
 
   handleHttpResponse(response)
 
@@ -45,10 +45,10 @@ axios.interceptors.response.use(function (response) {
 
   console.log(error)
 
-  ReactDOM.render(<div></div>, document.getElementById('loader'))
-
+  // ReactDOM.render(<div></div>, document.getElementById('loader'))
+  
   handleHttpResponse(error.response)
-
+  
   return Promise.reject(error);
 
 });
@@ -118,18 +118,24 @@ export function handleHttpResponse(response) {
     }
 
     ReactDOM.render(<Alert clazz={clazz} status={status} messages={messages} />, document.getElementById('alert'));
+    removeElementNode('alert')
   }
 }
 
 export function validationError(message) {
   const elem = <div className="alert alert-danger" role="alert"> {message} </div>;
   ReactDOM.render(elem, document.getElementById('alert'));
+  removeElementNode('alert')
 }
 
 export function validationSuccess(message) {
   const elem = <div className="alert alert-success" role="alert"> {message} </div>;
   ReactDOM.render(elem, document.getElementById('alert'));
+  removeElementNode('alert')
+}
+
+function removeElementNode(id) {
   setTimeout(function() {
-    ReactDOM.unmountComponentAtNode(document.getElementById('alert'));  
-  }, 5000)
+    ReactDOM.unmountComponentAtNode(document.getElementById(id));  
+  }, 2500)
 }
