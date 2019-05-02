@@ -91,8 +91,6 @@ class SignUp extends Component {
         return Object.keys(errors).length === 0;
     }
 
-    // FIXME Loader not show on request
-    // Click button stop to work on mobile browsers
     signup(e) {
 
         e.preventDefault();
