@@ -1,8 +1,8 @@
 ## ZBX1
 
-Dashboard to manage a file managemnt
+It's a web application dashboard to manage a file store using this repository https://github.com/metiago/zbx1
 
-## Set up
+#### Set up
 
 ```bash
 
@@ -17,4 +17,4 @@ npm install
 
 # Run your app
 npm run dev 
-
+```
