@@ -160,7 +160,7 @@ class Dashboard extends Component {
       that.hideProgressBar()
     });
   }
-
+  // TODO Test UX with multiple progress bars on a slow network
   upload(files) {
 
     // TODO: Implement chunking upload as well as a cancel function        

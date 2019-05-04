@@ -24,7 +24,6 @@ class Profile extends Component {
       errors: [],
     };
 
-    this.onChangeUsername = this.onChangeUsername.bind(this)
     this.onChangeName = this.onChangeName.bind(this)
     this.onChangeEmail = this.onChangeEmail.bind(this)
 
@@ -36,12 +35,8 @@ class Profile extends Component {
     this.findAllUsers();
   }
 
-  onChangeUsername(event) {
-    // this.setState({ username: event.target.value }, () => this.validateForm());
-    this.setState({ username: event.target.value });
-  }
-
   onChangeName(event) {
+    // this.setState({ username: event.target.value }, () => this.validateForm());
     this.setState({ name: event.target.value });
   }
 
@@ -105,8 +100,7 @@ class Profile extends Component {
 
       const form = {
         name: this.state.name,
-        email: this.state.email,
-        username: this.state.username,
+        email: this.state.email
       }
 
       axios.put(`${USERS_URL}/${this.state.ID}`, form).then(function (response) {
@@ -141,12 +135,13 @@ class Profile extends Component {
           </div>
           <div className="form-row">
             <div className="form-group col-md-12">
-              <Input id="username" text="Username" onChange={this.onChangeUsername} type="text" value={this.state.username} />
+              <Input id="username" text="Username" type="text" value={this.state.username} disabled={true} />
               <span style={{ color: "red" }}>{this.state.errors["username"]}</span>
             </div>
           </div>
           <Button action={this.update} text="Send" clazz="btn btn-primary" />
         </form>
+        
       </div>
     );
   }
