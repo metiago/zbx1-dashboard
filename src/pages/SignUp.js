@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import { SIGNUP_URL } from "../utils/Request";
-import Nav from '../components/nav/Nav'
 import Input from '../components/input/Input'
 import { validationSuccess } from '../utils/Request'
 import Button from '../components/button/Button';
