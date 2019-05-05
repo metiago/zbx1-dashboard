@@ -32,7 +32,7 @@ class Dashboard extends Component {
     this.detail = this.detail.bind(this)
     this.delete = this.delete.bind(this)
     this.upload = this.upload.bind(this)
-    this.download = this.download.bind(this)    
+    this.download = this.download.bind(this)
   }
 
   componentDidMount() {
@@ -64,7 +64,7 @@ class Dashboard extends Component {
     let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     let scrolled = (winScroll / height) * 100;
-    
+
     if (scrolled > 98) {
 
       axios.get(`${FILES_URL}/query?username=${this.state.username}&page=${this.state.page + 1}`).then(function (res) {
@@ -110,19 +110,16 @@ class Dashboard extends Component {
     }
   }
 
-  showProgressBar(source, uploadPercentage) {
-    ReactDOM.render(<ProgressBar source={source} style={{ width: `${uploadPercentage}%` }} value={uploadPercentage} files={this.state.filesInProgress} />, document.getElementById("progress"))
-  }
-
   hideProgressBar() {
     ReactDOM.render('', document.getElementById("progress"))
   }
 
-  send(file) {
+  upload(files) {
 
     let that = this;
     let CancelToken = axios.CancelToken;
     let source = CancelToken.source();
+
     let config = {
 
       headers: {
@@ -133,7 +130,9 @@ class Dashboard extends Component {
 
         const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
 
-        that.showProgressBar(source, uploadPercentage)
+        // const elem = document.getElementById("progress")
+
+        // ReactDOM.render(<ProgressBar source={source} style={{ width: `${uploadPercentage}%` }} value={uploadPercentage} files={that.state.filesInProgress} />, elem)
 
         if (uploadPercentage === 100) {
           that.setState({
@@ -144,71 +143,37 @@ class Dashboard extends Component {
       }
     }
 
-    let formdata = new FormData();
-    formdata.append('file', file, file.name);
-
-    axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
-
-      validationSuccess('File has been successfully uploaded.')
-      that.findAllFiles()
-
-    }).catch(function (error) {
-      if (axios.isCancel(error)) {
-        console.log('Request canceled', error.message);
-      }
-      console.log(error)
-      that.hideProgressBar()
-    });
-  }
-  // TODO Test UX with multiple progress bars on a slow network
-  upload(files) {
-
-    // TODO: Implement chunking upload as well as a cancel function        
-    // let blob = files[0]
-    // let BYTES_PER_CHUNK = parseInt(1048576, 10);
-    // let SIZE = blob.size;
-    // let NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
-    // let start = 0;
-    // let end = BYTES_PER_CHUNK;
-
     for (let file of files) {
 
       if (file.type) {
 
         this.state.filesInProgress.push(file)
 
-        this.send(file)
+        let formdata = new FormData();
+        formdata.append('file', file, file.name);
 
-      } 
+        axios.post(`${FILES_URL}/upload`, formdata, config).then(function (response) {
+
+          validationSuccess('File has been successfully uploaded.')
+          that.findAllFiles()
+
+        }).catch(function (error) {
+          if (axios.isCancel(error)) {
+            that.setState({ filesInProgress: [] })
+            //console.log('Request canceled', error.message);
+          }
+          console.log(error)
+          that.hideProgressBar()
+        });
+
+      }
       else if (file.size > MAX_FILE_SIZE_IN_BYTES) {
-
         validationError('Maximum file size 16MB')
-
       }
       else {
-
         validationError('Invalid file type')
-
       }
     }
-
-    // while (start < SIZE) {
-
-    //     formdata.append('file', blob.slice(start, end));
-    //     formdata.append('name', blob.name);
-
-    //     start = end;
-    //     end = start + BYTES_PER_CHUNK;
-
-    //     post('', formdata, config).then(function (response) {
-
-    //         
-
-    //     }).catch(function (error) {
-    //         
-    //         that.setState({ showProgressBar: false })
-    //     });
-    // }
   }
 
   download(file) {
