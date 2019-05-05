@@ -173,17 +173,19 @@ class Dashboard extends Component {
 
     for (let file of files) {
 
-      if (file.size > MAX_FILE_SIZE_IN_BYTES) {
-
-        validationError('Maximum file size 16MB')
-
-      } else if (file.type) {
+      if (file.type) {
 
         this.state.filesInProgress.push(file)
 
         this.send(file)
 
-      } else {
+      } 
+      else if (file.size > MAX_FILE_SIZE_IN_BYTES) {
+
+        validationError('Maximum file size 16MB')
+
+      }
+      else {
 
         validationError('Invalid file type')
 
