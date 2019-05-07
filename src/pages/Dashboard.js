@@ -127,10 +127,10 @@ class Dashboard extends Component {
           },
           cancelToken: source.token,
           onUploadProgress: function (progressEvent) {
-            const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
-            const elem = document.getElementById("progress")
+            //const uploadPercentage = parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10);
+            //const elem = document.getElementById("progress")
             //ReactDOM.render(<ProgressBar source={source} style={{ width: `${uploadPercentage}%` }} value={uploadPercentage} files={that.state.filesInProgress} />, elem)
-            if (uploadPercentage === 100) { }
+            //if (uploadPercentage === 100) { }
           }
         }
 
