@@ -20,7 +20,7 @@ class ProgressBar extends Component {
     for (let i = 0; i < this.props.files.length; i++) {
 
       arr.push(
-        <div key={i}>
+        <div id={i} key={i}>
           <div className="progress" />
           <div className="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style={this.props.style} aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{this.props.value}%</div>
           <small> <a onClick={this.cancel}> Cancel</a> </small>

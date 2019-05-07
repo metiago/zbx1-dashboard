@@ -45,10 +45,17 @@ axios.interceptors.response.use(function (response) {
 
   console.log(error)
 
-  ReactDOM.render(<div></div>, document.getElementById('loader'))
-  
+  if (axios.isCancel(error)) {
+    // This captures the error threw by axios cancel token
+    if (error.message.files.length === 0) {
+      ReactDOM.render(<div></div>, document.getElementById('loader'))
+    }
+  } else {
+    ReactDOM.render(<div></div>, document.getElementById('loader'))
+  }
+
   handleHttpResponse(error.response)
-  
+
   return Promise.reject(error);
 
 });
@@ -135,7 +142,7 @@ export function validationSuccess(message) {
 }
 
 function removeElementNode(id) {
-  setTimeout(function() {
-    ReactDOM.unmountComponentAtNode(document.getElementById(id));  
+  setTimeout(function () {
+    ReactDOM.unmountComponentAtNode(document.getElementById(id));
   }, 2500)
 }
