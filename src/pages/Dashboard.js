@@ -99,11 +99,9 @@ class Dashboard extends Component {
     const yes = window.confirm("Delete ?");
     if (yes === true) {
       const that = this;
+      that.setState(prevState => ({modal: !prevState.modal}))
       axios.delete(`${FILES_URL}/${fileID}`).then(function (response) {
-        that.findAllFiles()
-        that.setState(prevState => ({
-          modal: !prevState.modal
-        }))
+        that.findAllFiles()        
         validationSuccess('File has been deleted')
       }).catch(function (error) {
         console.log(error)
