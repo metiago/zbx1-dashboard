@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "auth0-js": "^8.7.0",
-    "axios": "^0.16.2",
+    "axios": "^0.19.2",
     "dotenv": "^7.0.0",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
@@ -17,7 +17,7 @@
     "serve": "^11.0.0"
   },
   "devDependencies": {
-    "react-scripts": "1.0.7"
+    "react-scripts": "^3.4.0"
   },
   "scripts": {
     "dev": "react-scripts start",
@@ -26,5 +26,17 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm run build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
